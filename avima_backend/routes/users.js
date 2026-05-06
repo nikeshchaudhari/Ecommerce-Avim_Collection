@@ -2,7 +2,7 @@ const express = require("express");
 const route = express.Router();
 const dbConn = require("../config/db");
 const bcrypt = require("bcrypt");
-const jwt = require("json-web-token");
+const jwt = require("jsonwebtoken")
 require("dotenv").config();
 
 // post data
@@ -16,19 +16,15 @@ route.post("/add-user", async (req, res) => {
 
     const hash = await bcrypt.hash(password, 10);
 
-    // email check
     const checkEmail = "SELECT * FROM users WHERE email = ?";
 
     dbConn.query(checkEmail, [email], (err, data) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
+      if (err) return res.status(500).json({ error: err.message });
 
       if (data.length > 0) {
         return res.status(400).json({ msg: "Email already registered" });
       }
- 
-      // after email check passes
+
       const query =
         "INSERT INTO users(fullName,email,password,role,phone,address) VALUES(?,?,?,?,?,?)";
 
@@ -36,18 +32,15 @@ route.post("/add-user", async (req, res) => {
         query,
         [fullName, email, hash, role || "user", phone, address],
         (err, result) => {
-          if (err) {
-            return res.status(500).json({ error: err.message });
-          }
+          if (err) return res.status(500).json({ error: err.message });
 
           return res.status(200).json({
-            msg: "Data Inserted",
+            msg: "User Registered",
             id: result.insertId,
           });
-        }
+        },
       );
     });
-
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -82,15 +75,76 @@ route.post("/login", async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    
+    //  validation
+    if (!email || !password) {
+      return res.status(400).json({
+        msg: "Email & Password required",
+      });
+    }
 
-  
+    // find user or email
+
+    const query = "SELECT * FROM users WHERE email = ?";
+
+    dbConn.query(query, [email, password], async (err, data) => {
+      if (err) {
+        console.log("Error");
+
+        return res.status(500).json({
+          error: err.message,
+        });
+      }
+
+      if (data.length === 0) {
+        return res.status(400).json({
+          msg: "User Not Found",
+        });
+      }
+
+      // user check
+
+      const user = data[0];
+      console.log(user);
+
+      // password Match
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log(isMatch);
+      
+
+      if (!isMatch) {
+        return res.status(401).json({
+          msg: "Invalid Password",
+        });
+      }
+
+      // token
+
+      const token = await jwt.sign(
+        {
+          uId: user.id,
+          role: user.role,
+          email: user.email,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1d",
+        },
+      );
+
+      return res.status(200).json({
+        msg: "Login Sucessfull",
+        uId:user.id,
+        fullName:user.fullName,
+        email:user.email,
+        token,
+      });
+    });
   } catch (err) {
     console.log("Error");
     res.status(400).json({
-      error:err
-    })
-    
+      error: err,
+    });
   }
 });
 module.exports = route;
