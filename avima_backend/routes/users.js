@@ -3,6 +3,7 @@ const route = express.Router();
 const dbConn = require("../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Auth = require("../middleware/Auth");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
 
@@ -25,7 +26,7 @@ route.post("/add-user", async (req, res) => {
 
     const checkEmail = "SELECT * FROM users WHERE email = ?";
 
-    dbConn.query(checkEmail, [email],async (err, data) => {
+    dbConn.query(checkEmail, [email], async (err, data) => {
       if (err) return res.status(500).json({ error: err.message });
 
       if (data.length > 0) {
@@ -34,63 +35,53 @@ route.post("/add-user", async (req, res) => {
 
       // photo Upload
       let photoUrl = null;
-      if(req.files && req.files.photo){
+      if (req.files && req.files.photo) {
         const uplaodPhoto = await cloudinary.uploader.upload(
-          req.files.photo.tempFilePath,{
-            folder:"Avima",
-          }
+          req.files.photo.tempFilePath,
+          {
+            folder: "Avima",
+          },
         );
-         console.log(uplaodPhoto);
-         photoUrl=uplaodPhoto.secure_url;
-
+        console.log(uplaodPhoto);
+        photoUrl = uplaodPhoto.secure_url;
       }
 
-  
+      const query =
+        "INSERT INTO users(fullName,email,password,role,phone,address,photo) VALUES(?,?,?,?,?,?,?)";
 
-    const query =
-      "INSERT INTO users(fullName,email,password,role,phone,address,photo) VALUES(?,?,?,?,?,?,?)";
+      dbConn.query(
+        query,
+        [fullName, email, hash, role, phone, address, photoUrl],
+        (err, result) => {
+          if (err) return res.status(500).json({ error: err.message });
 
-    dbConn.query(
-      query,
-      [fullName, email, hash, role, phone, address, photoUrl],
-      (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-
-        return res.status(200).json({
-          msg: "User Registered",
-          id: result.insertId,
-          photo: photoUrl,
-        });
-      },
-    );
+          return res.status(200).json({
+            msg: "User Registered",
+            id: result.insertId,
+            photo: photoUrl,
+          });
+        },
+      );
     });
-
-    
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
 });
 // get all data
 
-route.get("/all-user", async (req, res) => {
-  try {
-    const getAllUsers = "SELECT * FROM users";
-    dbConn.query(getAllUsers, (err, data) => {
-      if (err) {
-        return res.status(500).json({
-          error: err.message,
-        });
-      }
-      res.status(200).json({
-        msg: "All Users",
-        users: data,
+route.get("/all-user", (req, res) => {
+  const getAllUsers = "SELECT * FROM users";
+  dbConn.query(getAllUsers, (err, data) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message,
       });
+    }
+    return res.status(200).json({
+      msg: "All Users",
+      users: data,
     });
-  } catch (err) {
-    res.status(400).json({
-      error: err,
-    });
-  }
+  });
 });
 
 // login
@@ -152,9 +143,10 @@ route.post("/login", async (req, res) => {
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: "1d",
+          expiresIn: "10d",
         },
       );
+      console.log("LOGIN SECRET:", process.env.JWT_SECRET);
 
       return res.status(200).json({
         msg: "Login Sucessfull",
@@ -171,4 +163,24 @@ route.post("/login", async (req, res) => {
     });
   }
 });
+
+// edit or update
+
+route.put("/:id", Auth, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    res.json({
+      msg: "Authorized",
+      user: req.user,
+      id: id
+    });
+
+  } catch (err) {
+    console.log("Error");
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+
 module.exports = route;
