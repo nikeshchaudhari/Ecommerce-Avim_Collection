@@ -2,8 +2,15 @@ const express = require("express");
 const route = express.Router();
 const dbConn = require("../config/db");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
 
 // post data
 route.post("/add-user", async (req, res) => {
@@ -24,23 +31,36 @@ route.post("/add-user", async (req, res) => {
       if (data.length > 0) {
         return res.status(400).json({ msg: "Email already registered" });
       }
+     
+      if(req.files && req.files.photo){
+        const uplaodPhoto = await cloudinary.uploader.upload(
+          req.files.photo.tempFilePath,{
+            folder:"Avima",
+          }
+        )
+      }
 
-      const query =
-        "INSERT INTO users(fullName,email,password,role,phone,address) VALUES(?,?,?,?,?,?)";
+    const photoUrl = req.file ? req.file.path : null;
 
-      dbConn.query(
-        query,
-        [fullName, email, hash, role || "user", phone, address],
-        (err, result) => {
-          if (err) return res.status(500).json({ error: err.message });
+    const query =
+      "INSERT INTO users(fullName,email,password,role,phone,address,photo) VALUES(?,?,?,?,?,?,?)";
 
-          return res.status(200).json({
-            msg: "User Registered",
-            id: result.insertId,
-          });
-        },
-      );
+    dbConn.query(
+      query,
+      [fullName, email, hash, role, phone, address, photoUrl],
+      (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        return res.status(200).json({
+          msg: "User Registered",
+          id: result.insertId,
+          photo: photoUrl,
+        });
+      },
+    );
     });
+
+    
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -110,7 +130,6 @@ route.post("/login", async (req, res) => {
 
       const isMatch = await bcrypt.compare(password, user.password);
       console.log(isMatch);
-      
 
       if (!isMatch) {
         return res.status(401).json({
@@ -134,9 +153,9 @@ route.post("/login", async (req, res) => {
 
       return res.status(200).json({
         msg: "Login Sucessfull",
-        uId:user.id,
-        fullName:user.fullName,
-        email:user.email,
+        uId: user.id,
+        fullName: user.fullName,
+        email: user.email,
         token,
       });
     });
