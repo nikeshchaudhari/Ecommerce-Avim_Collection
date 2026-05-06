@@ -25,22 +25,27 @@ route.post("/add-user", async (req, res) => {
 
     const checkEmail = "SELECT * FROM users WHERE email = ?";
 
-    dbConn.query(checkEmail, [email], (err, data) => {
+    dbConn.query(checkEmail, [email],async (err, data) => {
       if (err) return res.status(500).json({ error: err.message });
 
       if (data.length > 0) {
         return res.status(400).json({ msg: "Email already registered" });
       }
-     
+
+      // photo Upload
+      let photoUrl = null;
       if(req.files && req.files.photo){
         const uplaodPhoto = await cloudinary.uploader.upload(
           req.files.photo.tempFilePath,{
             folder:"Avima",
           }
-        )
+        );
+         console.log(uplaodPhoto);
+         photoUrl=uplaodPhoto.secure_url;
+
       }
 
-    const photoUrl = req.file ? req.file.path : null;
+  
 
     const query =
       "INSERT INTO users(fullName,email,password,role,phone,address,photo) VALUES(?,?,?,?,?,?,?)";
