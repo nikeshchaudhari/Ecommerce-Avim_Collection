@@ -141,7 +141,7 @@ route.post("/login", async (req, res) => {
           role: user.role,
           email: user.email,
         },
-        process.env.JWT_SECRET,
+       process.env.JWT_SECRET,
         {
           expiresIn: "10d",
         },
@@ -167,19 +167,14 @@ route.post("/login", async (req, res) => {
 // edit or update
 
 route.put("/:id", Auth, async (req, res) => {
-  try {
-    const id = req.params.id;
 
-    res.json({
-      msg: "Authorized",
-      user: req.user,
-      id: id
-    });
+  console.log(req.user);
 
-  } catch (err) {
-    console.log("Error");
-    res.status(500).json({ msg: "Server error" });
-  }
+  res.json({
+    msg: "Authorized Success",
+    user: req.user
+  });
+
 });
 
 
