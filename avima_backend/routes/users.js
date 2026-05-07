@@ -35,6 +35,7 @@ route.post("/add-user", async (req, res) => {
 
       // photo Upload
       let photoUrl = null;
+      let photoId = null;
       if (req.files && req.files.photo) {
         const uplaodPhoto = await cloudinary.uploader.upload(
           req.files.photo.tempFilePath,
@@ -44,14 +45,15 @@ route.post("/add-user", async (req, res) => {
         );
         console.log(uplaodPhoto);
         photoUrl = uplaodPhoto.secure_url;
+        photoId = uplaodPhoto.public_id;
       }
 
       const query =
-        "INSERT INTO users(fullName,email,password,role,phone,address,photo) VALUES(?,?,?,?,?,?,?)";
+        "INSERT INTO users(fullName,email,password,role,phone,address,photo,photoId) VALUES(?,?,?,?,?,?,?,?)";
 
       dbConn.query(
         query,
-        [fullName, email, hash, role, phone, address, photoUrl],
+        [fullName, email, hash, role, phone, address, photoUrl, photoId],
         (err, result) => {
           if (err) return res.status(500).json({ error: err.message });
 
@@ -141,7 +143,7 @@ route.post("/login", async (req, res) => {
           role: user.role,
           email: user.email,
         },
-       process.env.JWT_SECRET,
+        process.env.JWT_SECRET,
         {
           expiresIn: "10d",
         },
@@ -167,15 +169,111 @@ route.post("/login", async (req, res) => {
 // edit or update
 
 route.put("/:id", Auth, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { fullName, email, password, role, phone, address } = req.body;
 
-  console.log(req.user);
+    let photoUrl = null;
+    let photoId = null;
 
-  res.json({
-    msg: "Authorized Success",
-    user: req.user
-  });
+    const userGet = "SELECT * FROM users WHERE id =?";
 
+    dbConn.query(userGet, [id], async (err, data) => {
+      if (err) {
+        return res.status(500).json({
+          msg: err.message,
+        });
+      }
+
+      if (data.length === 0) {
+        return res.status(404).json({
+          msg: "User not found",
+        });
+      }
+
+      const user = data[0];
+      // console.log(data);
+
+      if (req.files && req.files.photo) {
+        // delete cloudinary photo
+
+        if (user.photoId) {
+          await cloudinary.uploader.destroy(user.photoId);
+        }
+
+        // upload new photot
+
+        const upload = await cloudinary.uploader.upload(
+          req.files.photo.tempFilePath,
+          {
+            folder: "Avima",
+          },
+        );
+        ((photoUrl = upload.secure_url), (photoId = upload.public_id));
+      }
+
+      let hash = user.password;
+
+      if (password) {
+        hash = await bcrypt.hash(password, 10);
+      }
+      // update query
+
+      const updateData = `UPDATE users SET fullName = ?, email=?, password=?,phone=?,address=?,role=?, photo = IFNULL(?,photo), photoId =IFNULL(?,photoId) WHERE id = ?`;
+
+      dbConn.query(
+        updateData,
+        [fullName, email, hash, phone, address, role, photoUrl, photoId, id],
+        (err, data) => {
+          if (err) {
+            return res.status(500).json({
+              error: err.message,
+            });
+          }
+
+          return res.status(200).json({
+            msg: "User updated successfully",
+          });
+        },
+      );
+    });
+  } catch (err) {
+    console.log("Error");
+  }
 });
 
+// delete row data
+
+route.delete("/:id", Auth, (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const getUser = "SELECT * FROM users WHERE id = ?";
+
+    dbConn.query(getUser, [id], async (err, data) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (data.length === 0) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+
+      const user = data[0];
+
+      // delete photo
+
+     if (user.photoId) {
+      await cloudinary.uploader.destroy(user.photoId);
+    }
+      const deleteQuery = "DELETE FROM users WHERE id = ?";
+      dbConn.query(deleteQuery, [id], async (err, data) => {
+        if (err) return res.status(500).json({ error: err.message });
+        return res.status(200).json({
+          msg: "User + image deleted successfully",
+        });
+      });
+    });
+  } catch (err) {
+    console.log("error");
+  }
+});
 
 module.exports = route;
