@@ -1,15 +1,25 @@
 import { useEffect, useState } from "react";
 import UserNavbar from "../components/UserNavbar";
+import { useNavigate } from "react-router-dom";
 
 const UserAccount = () => {
+    const navigate = useNavigate();
   const [fullName, setFullName] = useState<string>("");
   useEffect(() => {
-    const name = localStorage.getItem("fullName");
+    const name:any = localStorage.getItem("fullName");
     setFullName(name);
   }, []);
 
   const token = localStorage.getItem("token");
 
+
+//   logout
+
+ const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
   return (
     <>
       <main className="bg-[#faf5ec] min-h-screen">
@@ -23,7 +33,7 @@ const UserAccount = () => {
                 </span>
                 <h2 className=" text-3xl md:text-4xl font-cormorant">Hello, {fullName}</h2>
               </div>
-              <div className="flex  md:gap-0 mt-5 lg:mt-0">
+              <div className="flex  gap-3  mt-5 lg:mt-0">
                 <button
                   type="button"
                   className="border border-black/10 px-3 md:px-10 whitespace-nowrap font-inter shadow text-[12px] md:text-[16px] hover:bg-[#f1e2c4] cursor-pointer"
@@ -33,6 +43,7 @@ const UserAccount = () => {
                 <button
                   type="button"
                   className="font-inter hover:bg-[#f1e2c4] whitespace-nowrap text-[12px] md:text-[16px] px-5 py-2"
+                  onClick={handleLogout}
                 >
                   Sign out
                 </button>
@@ -98,6 +109,9 @@ const UserAccount = () => {
                   <p className="text-sm text-red-500">{errors.address}*</p>
                 )} */}
                   </div>
+                  <button type="submit" className="bg-red-900 text-white px-5 py-2 font-semibold">
+                    Save changes
+                  </button>
                 </form>
               </div>
               <div className="border border-black/20 w-full px-5 py-5 bg-white mt-5 lg:mt-0 mb-5">
