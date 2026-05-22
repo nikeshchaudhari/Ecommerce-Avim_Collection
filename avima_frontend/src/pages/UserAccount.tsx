@@ -10,7 +10,7 @@ const UserAccount = () => {
     setFullName(name);
   }, []);
 
-  const token = localStorage.getItem("token");
+//   const token = localStorage.getItem("token");
 
 
 //   logout
