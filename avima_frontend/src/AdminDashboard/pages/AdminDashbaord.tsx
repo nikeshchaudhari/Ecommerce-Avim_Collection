@@ -1,5 +1,9 @@
 import AdminSideBar from "../component/AdminSideBar";
 import Navbar from "../component/Navbar";
+import { IoIosTrendingUp } from "react-icons/io";
+import { FiShoppingBag } from "react-icons/fi";
+import { MdOutlineDiscount } from "react-icons/md";
+import { IoCubeSharp } from "react-icons/io5";
 
 const AdminDashbaord = () => {
   return (
@@ -42,8 +46,8 @@ const AdminDashbaord = () => {
 
             {/* BOX */}
             <div className="grid grid-cols-2  lg:grid-cols-5 gap-4 mt-6">
-              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black">
-                <div className="flex justify-around items-start py-2 px-5">
+              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
+                <div className="flex justify-between  items-start py-2 px-5">
                   <div>
                     <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
                       Total Revenue
@@ -59,15 +63,107 @@ const AdminDashbaord = () => {
                     </span>
                   </div>
                   <div>
-                    <span className="lg:text-[30px] font-inter text-red-800">$</span>
+                    <span className="lg:text-[30px] font-inter text-red-800">
+                      $
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white h-24 rounded">2</div>
-              <div className="bg-white h-24 rounded">3</div>
-              <div className="bg-white h-24 rounded">4</div>
-              <div className="bg-white h-24 rounded">5</div>
+              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
+                <div className="flex justify-between items-start py-2 px-5">
+                  <div>
+                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                      Today
+                    </span>
+                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                      NPR{" "}
+                      <span className="text-[16px] lg:text-[30px]">
+                        {new Intl.NumberFormat().format(0)}
+                      </span>
+                    </h1>
+                    <span className=" dark:text-white/60 text-[10px] lg:text-[12px] text-black/60">
+                      Revenue today
+                    </span>
+                  </div>
+                  <div>
+                    <span className="lg:text-[30px] font-inter text-red-800">
+                      <IoIosTrendingUp />
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
+                <div className="flex justify-between items-start py-2 px-5">
+                  <div>
+                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                      Orders
+                    </span>
+                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                      NPR{" "}
+                      <span className="text-[16px] lg:text-[30px]">
+                        {new Intl.NumberFormat().format(12)}
+                      </span>
+                    </h1>
+                    <span className=" dark:text-white/60 text-[10px] lg:text-[12px] text-black/60">
+                      5 pending
+                    </span>
+                  </div>
+                  <div>
+                    <span className="lg:text-[30px] font-inter text-red-800">
+                      <FiShoppingBag />
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
+                <div className="flex justify-between items-start py-2 px-5">
+                  <div>
+                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                      Discounts given
+                    </span>
+                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                      NPR{" "}
+                      <span className="text-[16px] lg:text-[30px]">
+                        {new Intl.NumberFormat().format(0)}
+                      </span>
+                    </h1>
+                    <span className=" dark:text-white/60 text-[10px] lg:text-[12px] text-black/60">
+                      0 discounted sale(s)
+                    </span>
+                  </div>
+                  <div>
+                    <span className="lg:text-[30px] font-inter text-red-800">
+                      <MdOutlineDiscount />
+
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
+                <div className="flex justify-between items-start py-2 px-5">
+                  <div>
+                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                      Products
+                    </span>
+                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                      NPR{" "}
+                      <span className="text-[16px] lg:text-[30px]">
+                        {new Intl.NumberFormat().format(61)}
+                      </span>
+                    </h1>
+                    <span className=" dark:text-white/60 text-[10px] lg:text-[12px] text-black/60">
+                      Active catalog
+                    </span>
+                  </div>
+                  <div>
+                    <span className="lg:text-[30px] font-inter text-red-800">
+                      <IoCubeSharp />
+
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
         </div>
