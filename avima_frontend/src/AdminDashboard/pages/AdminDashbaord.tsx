@@ -8,20 +8,7 @@ import { IoCubeSharp } from "react-icons/io5";
 const AdminDashbaord = () => {
   return (
     <>
-      {/* Dynamic Keyframes inject gareko jasle direct pass-through flow garcha */}
-      <style>{`
-        @keyframes diagonalPass {
-          0% {
-            transform: translate(-100%, -100%);
-          }
-          100% {
-            transform: translate(100%, 100%);
-          }
-        }
-        .animate-line-pass {
-          animation: diagonalPass 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-      `}</style>
+      
       <nav className="">
         <Navbar />
       </nav>
