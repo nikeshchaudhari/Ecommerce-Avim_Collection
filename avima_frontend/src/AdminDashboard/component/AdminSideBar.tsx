@@ -19,6 +19,7 @@ const AdminSideBar = () => {
             </h2>
             <NavLink
               to="/dashboard"
+              end
               className={({ isActive }) =>
                 `flex items-center gap-2 px-2 py-3 rounded font-inter font-[550]
      ${isActive ? "bg-red-800 text-white" : "text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600/50 dark:text-white"}`
@@ -35,7 +36,7 @@ const AdminSideBar = () => {
               )}
             </NavLink>
             <NavLink
-              to="/products"
+              to="/dashboard/products"
               className={({ isActive }) =>
                 `flex items-center gap-2 px-2 py-3 rounded font-inter font-[550]
      ${isActive ? "bg-red-800 text-white" : "text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600/50 dark:text-white"}`
@@ -82,7 +83,7 @@ const AdminSideBar = () => {
               )}
             </NavLink>
                     <NavLink
-              to="/products"
+              to="/dashboard/users"
               className={({ isActive }) =>
                 `flex items-center gap-2 px-2 py-3 rounded font-inter font-[550]
      ${isActive ? "bg-red-800 text-white" : "text-gray-700 hover:bg-gray-100  dark:hover:bg-gray-600/50 dark:text-white"}`

@@ -14,7 +14,7 @@ const Navbar = () => {
     }
   }, [dark]);
   return (
-    <main className="w-full border-b border-black/20">
+    <main className="w-full dark:border-white/20 border-b border-black/10 bg-[#faf3eb] dark:bg-black text-black dark:text-white">
       <nav className="px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex  items-center  gap-5">
@@ -28,7 +28,7 @@ const Navbar = () => {
                 className="rounded-full w-8 md:w-12 md:h-12"
               />
               <div>
-                <h1 className=" text-[12px] md:text-xl font-medium font-cormorant">
+                <h1 className=" text-[12px] md:text-xl font-medium font-cormorant text-black dark:text-white">
                   AVIMA
                 </h1>
                 <h3 className="font-inter text-[8px] md:text-[10px] tracking-[3px]">
@@ -40,7 +40,10 @@ const Navbar = () => {
 
           {/* Right side (future menu/buttons) */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1 text-black/40 hover:text-black cursor-pointer text-[12px] md:text-[10px]">
+            <button onClick={()=>setDark(!dark)} className="px-4 py-2 border">
+              {dark ?"light":"dark"}
+            </button>
+            <div className="flex items-center gap-1 text-black/40 hover:text-black dark:hover:text-white dark:text-white cursor-pointer text-[12px] md:text-[16px]">
               <LiaExternalLinkAltSolid />
             <span className="whitespace-nowrap">
               {" "}
@@ -50,7 +53,7 @@ const Navbar = () => {
             </div>
             <div className=" flex  items-center gap-1 text-white bg-red-700 px-2 md:px-2 py-1">
               <LiaSignOutAltSolid size={20} />
-              <button type="button" className="text-[12px] md:text-[10px] whitespace-nowrap">Sign out</button>
+              <button type="button" className="text-[12px] md:text-[16px] whitespace-nowrap">Sign out</button>
             </div>
           </div>
         </div>

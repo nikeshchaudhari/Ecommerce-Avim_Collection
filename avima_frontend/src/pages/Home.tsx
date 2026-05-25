@@ -11,7 +11,7 @@ const Home = () => {
               <div className="flex w-1/2 items-center justify-center">
                 <div className="  flex flex-col justify-center px-8 py-16 md:px-16 md:py-24">
                   <span className="font-inter text-red-900">Est. Bhaktapur · Nepal</span>
-                  <h1 className="mt-6 font-cormorant text-5xl md:text-7xl leading-[0.95] text-foreground max-w-4xl">Where timeless style meets <span className="text-red-900">true value.</span> </h1>
+                  <h1 className="mt-6 font-cormorant text-5xl md:text-7xl leading-[0.95] text-foreground max-w-4xl">Where timeless style meets <br /> <span className="text-red-900">true value.</span> </h1>
                   <p className="mt-6 max-w-md text-base text-muted-foreground leading-relaxed">Heritage Nepali clothing — Haku Patasi, Gunyu Cholo, Daura Suruwal, Dhaka Topi — crafted slowly, by hand, in the courtyards of Bhaktapur.</p>
                 </div>
               </div>
