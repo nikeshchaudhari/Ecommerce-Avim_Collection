@@ -1,8 +1,23 @@
 import Navbar from "../component/Navbar";
 import AdminSideBar from "../component/AdminSideBar";
 import { IoSearchOutline } from "react-icons/io5";
+import { useEffect, useState } from "react";
 
 const AdminProducts = () => {
+
+     const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [open]);
   return (
     <>
       <nav className="">
@@ -10,7 +25,7 @@ const AdminProducts = () => {
       </nav>
 
       <main>
-        <div className="bg-[#f9efe7] dark:bg-black min-h-screen lg:flex">
+        <div className="bg-[#f9efe7] dark:bg-black min-h-full lg:flex">
           <aside className="hidden lg:block">
             <AdminSideBar />
           </aside>
@@ -37,6 +52,7 @@ const AdminProducts = () => {
                   <IoSearchOutline className="absolute top-3 left-8" />
                   <button
                     type="button"
+                    onClick={()=>setOpen(!open)}
                     className="bg-yellow-500 px-6  py-1.5 rounded hover:bg-yellow-400 transition duration-300 font-inter"
                   >
                     + New product
@@ -44,8 +60,49 @@ const AdminProducts = () => {
                 
               </div>
             </div>
+              {/* added catalog  */}
+{open && (
+  <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+
+    <div className="bg-white w-1/2 p-5 rounded shadow-lg relative">
+
+      {/* close button */}
+      <button
+        onClick={() => setOpen(false)}
+        className="absolute top-2 right-2 text-black"
+      >
+        ✖
+      </button>
+
+      <h2 className="text-xl font-cormorant mb-4">New Product</h2>
+
+      <input
+        type="text"
+        placeholder="Product name"
+        className="border w-full p-2 mb-3"
+      />
+
+      <input
+        type="number"
+        placeholder="Price"
+        className="border w-full p-2 mb-3"
+      />
+
+      {/* <button className="bg-green-600 text-white px-4 py-2 rounded w-full">
+        Save
+      </button> */}
+
+    </div>
+
+  </div>
+)}
+
+
           </section>
         </div>
+
+      
+
       </main>
     </>
   );
