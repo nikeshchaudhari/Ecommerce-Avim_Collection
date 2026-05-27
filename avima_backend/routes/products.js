@@ -8,6 +8,96 @@ require("dotenv").config();
 
 // add products
 
+// route.post("/add-products", Auth, async (req, res) => {
+//   try {
+//     const {
+//       name,
+//       gender,
+//       description,
+//       price,
+//       discount,
+//       stock,
+//       slug,
+//       sizes,
+//       colors,
+//       brand,
+//       featured,
+//       status,
+
+//       discount_starts_at,
+//       discount_ends_at,
+//       categoryId,
+//     } = req.body;
+
+//     //    photo add
+
+//     let photoUrl = null;
+//     let photoId = null;
+
+//     if (req.files && req.files.photo) {
+//       const upload = await cloudinary.uploader.upload(
+//         req.files.photo.tempFilePath,
+//         {
+//           folder: "Avima/avima_products",
+//         },
+//       );
+
+//       photoUrl = upload.secure_url;
+//       photoId = upload.public_id;
+//     }
+
+//     // add data
+//     const query =
+//       "INSERT INTO products(name,gender,description,price,discount,stock,slug,sizes,colors,brand,featured, status,photo,photoId,  discount_starts_at,  discount_ends_at,categoryId)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+//     dbConn.query(
+//       query,
+//       [
+//         name,
+//         gender,
+//         description,
+//         price,
+//         discount,
+//         stock,
+//         slug,
+//         sizes,
+//         colors,
+//         brand,
+//         featured,
+//         status,
+//         photoUrl,
+//         photoId,
+
+//         discount_starts_at,
+//         discount_ends_at,
+//         Number(categoryId),
+//       ],
+//       (err, data) => {
+//         if (err) {
+//           return res.status(500).json({
+//             error: err.message,
+//           });
+//         }
+
+//         console.log({
+//           name,
+//           categoryId,
+//           photoUrl,
+//           photoId,
+//         });
+//         return res.status(201).json({
+//           msg: "Product added successfully",
+//           productId: data.insertId,
+//         });
+//       },
+//     );
+//   } catch (err) {
+//     console.log("Error");
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+// multiple product added
 route.post("/add-products", Auth, async (req, res) => {
   try {
     const {
@@ -23,32 +113,44 @@ route.post("/add-products", Auth, async (req, res) => {
       brand,
       featured,
       status,
-
       discount_starts_at,
       discount_ends_at,
       categoryId,
     } = req.body;
 
-    //    photo add
+    let photosArray = [];
+    let photoId = [];
 
-    let photoUrl = null;
-    let photoId = null;
+    // CHECK MULTIPLE FILES
+    if (req.files && req.files.photos) {
+      let files = req.files.photos;
 
-    if (req.files && req.files.photo) {
-      const upload = await cloudinary.uploader.upload(
-        req.files.photo.tempFilePath,
-        {
-          folder: "Avima/avima_products",
-        },
-      );
+      // if only one file
+      if (!Array.isArray(files)) {
+        files = [files];
+      }
 
-      photoUrl = upload.secure_url;
-      photoId = upload.public_id;
+      for (let i = 0; i < files.length; i++) {
+        const upload = await cloudinary.uploader.upload(files[i].tempFilePath, {
+          folder: "Avima/products",
+        });
+
+        console.log(upload);
+
+        photosArray.push({
+          url: upload.secure_url,
+          photoId: upload.public_id, // 👈 EACH IMAGE OWN ID
+        });
+      }
     }
 
-    // add data
-    const query =
-      "INSERT INTO products(name,gender,description,price,discount,stock,slug,sizes,colors,brand,featured, status,photo,photoId,  discount_starts_at,  discount_ends_at,categoryId)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const query = `
+      INSERT INTO products
+      (name, gender, description, price, discount, stock, slug,
+       sizes, colors, brand, featured, status, photos,
+       discount_starts_at, discount_ends_at, categoryId)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    `;
 
     dbConn.query(
       query,
@@ -60,40 +162,29 @@ route.post("/add-products", Auth, async (req, res) => {
         discount,
         stock,
         slug,
-        sizes,
-        colors,
+        JSON.stringify(sizes),
+        JSON.stringify(colors),
         brand,
         featured,
         status,
-        photoUrl,
-        photoId,
-
+        JSON.stringify(photosArray), // 👈 IMPORTANT
         discount_starts_at,
         discount_ends_at,
         Number(categoryId),
       ],
-      (err, data) => {
+      (err, result) => {
         if (err) {
-          return res.status(500).json({
-            error: err.message,
-          });
+          return res.status(500).json({ error: err.message });
         }
 
-        console.log({
-          name,
-          categoryId,
-          photoUrl,
-          photoId,
-        });
         return res.status(201).json({
           msg: "Product added successfully",
-          productId: data.insertId,
+          productId: result.insertId,
         });
       },
     );
   } catch (err) {
-    console.log("Error");
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 });
 
@@ -120,6 +211,127 @@ route.get("/all-products", async (req, res) => {
 
 // edit or update
 
+// route.put("/:id", Auth, async (req, res) => {
+//   try {
+//     const id = req.params.id;
+
+//     const {
+//       name,
+//       gender,
+//       description,
+//       price,
+//       discount,
+//       stock,
+//       slug,
+//       sizes,
+//       colors,
+//       brand,
+//       featured,
+//       status,
+
+//       discount_starts_at,
+//       discount_ends_at,
+//       categoryId,
+//     } = req.body;
+
+//     let photoUrl = null;
+//     let photoId = null;
+
+//     const query = "SELECT * FROM products WHERE id =?";
+//     dbConn.query(query, [id], async (err, data) => {
+//       if (err) {
+//         return res.status(500).json({
+//           msg: err.message,
+//         });
+//       }
+
+//       if (data.length === 0) {
+//         return res.status(404).json({
+//           msg: "Products not found",
+//         });
+//       }
+
+//       const items = data[0];
+//       //   console.log(items);
+
+//       if (req.files && req.files.photo) {
+//         // delete cloudinary photo
+
+//         if (items.photoId) {
+//           await cloudinary.uploader.destroy(items.photoId);
+//         }
+
+//         const upload = await cloudinary.uploader.upload(
+//           req.files.photo.tempFilePath,
+//           {
+//             folder: "Avima/avima_products",
+//           },
+//         );
+//         ((photoUrl = upload.secure_url), (photoId = upload.public_id));
+//       }
+
+//       const updateProducts = `
+// UPDATE products SET
+//   name = ?,
+//   gender = ?,
+//   description = ?,
+//   price = ?,
+//   discount = ?,
+//   stock = ?,
+//   slug = ?,
+//   sizes = ?,
+//   colors = ?,
+//   brand = ?,
+//   featured = ?,
+//   status = ?,
+//   photo = IFNULL(?,photo),
+//   photoId = IFNULL(?,photoId),
+//   discount_starts_at = ?,
+//   discount_ends_at = ?,
+//   categoryId = ?
+// WHERE id = ?
+// `;
+//       dbConn.query(
+//         updateProducts,
+//         [
+//           name,
+//           gender,
+//           description,
+//           price,
+//           discount,
+//           stock,
+//           slug,
+//           sizes,
+//           colors,
+//           brand,
+//           featured,
+//           status,
+//           photoUrl,
+//           photoId,
+
+//           discount_starts_at,
+//           discount_ends_at,
+//           Number(categoryId),
+//           id,
+//         ],
+//         (err, data) => {
+//           if (err) {
+//             return res.status(500).json({
+//               error: err.message,
+//             });
+//           }
+
+//           return res.status(200).json({
+//             msg: "Products updated successfully",
+//           });
+//         },
+//       );
+//     });
+//   } catch (err) {
+//     console.log("error");
+//   }
+// });
+
 route.put("/:id", Auth, async (req, res) => {
   try {
     const id = req.params.id;
@@ -143,11 +355,8 @@ route.put("/:id", Auth, async (req, res) => {
       categoryId,
     } = req.body;
 
-    let photoUrl = null;
-    let photoId = null;
-
-    const query = "SELECT * FROM products WHERE id =?";
-    dbConn.query(query, [id], async (err, data) => {
+    const query = "SELECT * FROM products WHERE id=?";
+    dbConn.query([id], async (err, data) => {
       if (err) {
         return res.status(500).json({
           msg: err.message,
@@ -159,88 +368,23 @@ route.put("/:id", Auth, async (req, res) => {
           msg: "Products not found",
         });
       }
+    });
 
-      const items = data[0];
-      //   console.log(items);
+    let newPhoto = [];
 
-      if (req.files && req.files.photo) {
-        // delete cloudinary photo
+    if (req.files && req.files.photos) {
+      let files = req.files.photos;
 
-        if (items.photoId) {
-          await cloudinary.uploader.destroy(items.photoId);
-        }
-
-        const upload = await cloudinary.uploader.upload(
-          req.files.photo.tempFilePath,
-          {
-            folder: "Avima/avima_products",
-          },
-        );
-        ((photoUrl = upload.secure_url), (photoId = upload.public_id));
+      if (!Array.isArray(files)) {
+        files = [files];
       }
 
-      const updateProducts = `
-UPDATE products SET
-  name = ?,
-  gender = ?,
-  description = ?,
-  price = ?,
-  discount = ?,
-  stock = ?,
-  slug = ?,
-  sizes = ?,
-  colors = ?,
-  brand = ?,
-  featured = ?,
-  status = ?,
-  photo = IFNULL(?,photo),
-  photoId = IFNULL(?,photoId),
-  discount_starts_at = ?,
-  discount_ends_at = ?,
-  categoryId = ?
-WHERE id = ?
-`;
-      dbConn.query(
-        updateProducts,
-        [
-          name,
-          gender,
-          description,
-          price,
-          discount,
-          stock,
-          slug,
-          sizes,
-          colors,
-          brand,
-          featured,
-          status,
-          photoUrl,
-          photoId,
-
-          discount_starts_at,
-          discount_ends_at,
-          Number(categoryId),
-          id,
-        ],
-        (err, data) => {
-          if (err) {
-            return res.status(500).json({
-              error: err.message,
-            });
-          }
-
-          return res.status(200).json({
-            msg: "Products updated successfully",
-          });
-        },
-      );
-    });
-  } catch (err) {
-    console.log("error");
-  }
+      for (let i = 0; i < files.length; i++) {
+        
+      }
+    }
+  } catch (err) {}
 });
-
 // delete data or products
 
 route.delete("/:id", Auth, async (req, res) => {
@@ -273,8 +417,8 @@ route.delete("/:id", Auth, async (req, res) => {
   } catch (err) {
     console.log("Error");
     res.status(400).json({
-        error:err.message
-    })
+      error: err.message,
+    });
   }
 });
 
