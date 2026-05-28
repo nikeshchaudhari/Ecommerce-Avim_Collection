@@ -59,12 +59,12 @@ const AdminDashbaord = () => {
               <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
                 <div className="flex justify-between items-start py-2 px-5">
                   <div>
-                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                    <span className="font-inter uppercase lg:text-[10px] 2xl:text-[12px] tracking-[1px] lg:tracking-[4px] ">
                       Today
                     </span>
-                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                    <h1 className="text-[20px] lg:text-[25px]  font-cormorant text-red-800">
                       NPR{" "}
-                      <span className="text-[16px] lg:text-[30px]">
+                      <span className="text-[16px] lg:text-[20px]">
                         {new Intl.NumberFormat().format(0)}
                       </span>
                     </h1>
@@ -73,7 +73,7 @@ const AdminDashbaord = () => {
                     </span>
                   </div>
                   <div>
-                    <span className="lg:text-[30px] font-inter text-red-800">
+                    <span className="lg:text-[20px] font-inter text-red-800">
                       <IoIosTrendingUp />
                     </span>
                   </div>
@@ -82,12 +82,12 @@ const AdminDashbaord = () => {
               <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
                 <div className="flex justify-between items-start py-2 px-5">
                   <div>
-                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                    <span className="font-inter uppercase lg:text-[10px] 2xl:text-[12px] tracking-[1px] lg:tracking-[4px] ">
                       Orders
                     </span>
-                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                    <h1 className="text-[20px] lg:text-[25px] font-cormorant text-red-800">
                       NPR{" "}
-                      <span className="text-[16px] lg:text-[30px]">
+                      <span className="text-[20px] lg:text-[25px]">
                         {new Intl.NumberFormat().format(12)}
                       </span>
                     </h1>
@@ -96,7 +96,7 @@ const AdminDashbaord = () => {
                     </span>
                   </div>
                   <div>
-                    <span className="lg:text-[30px] font-inter text-red-800">
+                    <span className="lg:text-[20px] font-inter text-red-800">
                       <FiShoppingBag />
                     </span>
                   </div>
@@ -105,12 +105,12 @@ const AdminDashbaord = () => {
               <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
                 <div className="flex justify-between items-start py-2 px-5">
                   <div>
-                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                    <span className="font-inter uppercase lg:text-[8px] 2xl:text-[12px] tracking-[1px] lg:tracking-[4px] ">
                       Discounts given
                     </span>
-                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                    <h1 className="text-[20px] lg:text-[25px] font-cormorant text-red-800">
                       NPR{" "}
-                      <span className="text-[16px] lg:text-[30px]">
+                      <span className="text-[16px] lg:text-[20px]">
                         {new Intl.NumberFormat().format(0)}
                       </span>
                     </h1>
@@ -119,7 +119,7 @@ const AdminDashbaord = () => {
                     </span>
                   </div>
                   <div>
-                    <span className="lg:text-[30px] font-inter text-red-800">
+                    <span className="lg:text-[20px] font-inter text-red-800">
                       <MdOutlineDiscount />
                     </span>
                   </div>
@@ -128,12 +128,12 @@ const AdminDashbaord = () => {
               <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
                 <div className="flex justify-between items-start py-2 px-5">
                   <div>
-                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                    <span className="font-inter uppercase lg:text-[10px] 2xl:text-[12px] tracking-[1px] lg:tracking-[4px] ">
                       Products
                     </span>
-                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                    <h1 className="text-[20px] lg:text-[25px] font-cormorant text-red-800">
                       NPR{" "}
-                      <span className="text-[16px] lg:text-[30px]">
+                      <span className="text-[16px] lg:text-[20px]">
                         {new Intl.NumberFormat().format(61)}
                       </span>
                     </h1>
@@ -142,7 +142,7 @@ const AdminDashbaord = () => {
                     </span>
                   </div>
                   <div>
-                    <span className="lg:text-[30px] font-inter text-red-800">
+                    <span className="lg:text-[20px] font-inter text-red-800">
                       <IoCubeSharp />
                     </span>
                   </div>
