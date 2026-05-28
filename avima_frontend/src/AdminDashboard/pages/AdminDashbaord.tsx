@@ -8,7 +8,6 @@ import { IoCubeSharp } from "react-icons/io5";
 const AdminDashbaord = () => {
   return (
     <>
-      
       <nav className="">
         <Navbar />
       </nav>
@@ -33,15 +32,15 @@ const AdminDashbaord = () => {
 
             {/* BOX */}
             <div className="grid grid-cols-2 md:grid-cols-4  lg:grid-cols-5 gap-4 mt-6">
-              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer w-fix">
+              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer ">
                 <div className="flex justify-between  items-start py-2 px-5">
                   <div>
-                    <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
+                    <span className="font-inter uppercase text-[10px] lg:text-[10px] 2xl:text-[12px] tracking-[1px] lg:tracking-[4px] ">
                       Total Revenue
                     </span>
-                    <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
+                    <h1 className="text-[20px] lg:text-[25px]  font-cormorant text-red-800">
                       NPR{" "}
-                      <span className="text-[16px] lg:text-[15px]">
+                      <span className="text-[16px] lg:text-[20px]">
                         {new Intl.NumberFormat().format(4690000)}
                       </span>
                     </h1>
@@ -50,7 +49,7 @@ const AdminDashbaord = () => {
                     </span>
                   </div>
                   <div>
-                    <span className="lg:text-[30px] font-inter text-red-800">
+                    <span className="lg:text-[20px] font-inter text-red-800">
                       $
                     </span>
                   </div>
@@ -122,7 +121,6 @@ const AdminDashbaord = () => {
                   <div>
                     <span className="lg:text-[30px] font-inter text-red-800">
                       <MdOutlineDiscount />
-
                     </span>
                   </div>
                 </div>
@@ -146,7 +144,6 @@ const AdminDashbaord = () => {
                   <div>
                     <span className="lg:text-[30px] font-inter text-red-800">
                       <IoCubeSharp />
-
                     </span>
                   </div>
                 </div>
