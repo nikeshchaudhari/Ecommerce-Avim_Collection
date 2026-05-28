@@ -32,8 +32,8 @@ const AdminDashbaord = () => {
             </p>
 
             {/* BOX */}
-            <div className="grid grid-cols-2  lg:grid-cols-5 gap-4 mt-6">
-              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer">
+            <div className="grid grid-cols-2 md:grid-cols-4  lg:grid-cols-5 gap-4 mt-6">
+              <div className="bg-linear-to-br from-yellow-500/30 via-white  to-white h-auto rounded dark:bg-linear-to-br dark:from-red-500/30 dark:via-black dark:to-black transform transition-all hover:translate-1.5 duration-300 cursor-pointer w-fix">
                 <div className="flex justify-between  items-start py-2 px-5">
                   <div>
                     <span className="font-inter uppercase text-[10px] lg:text-[12px] tracking-[1px] lg:tracking-[4px] ">
@@ -41,7 +41,7 @@ const AdminDashbaord = () => {
                     </span>
                     <h1 className="text-[20px] lg:text-[35px] font-cormorant text-red-800">
                       NPR{" "}
-                      <span className="text-[16px] lg:text-[30px]">
+                      <span className="text-[16px] lg:text-[15px]">
                         {new Intl.NumberFormat().format(4690000)}
                       </span>
                     </h1>
