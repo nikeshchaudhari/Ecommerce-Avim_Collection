@@ -2,9 +2,10 @@ const express = require("express");
 const route = express.Router();
 const dbConn = require("../config/db");
 const Auth = require("../middleware/Auth");
+const Admin = require("../middleware/Admin");
 
 // add orders
-route.post("/add-order", Auth, async (req, res) => {
+route.post("/add-order", Admin, async (req, res) => {
   try {
     const {
       userId,
@@ -110,15 +111,15 @@ route.get("/all-order", async (req, res) => {
 
 route.get("/my-order", Auth, async (req, res) => {
   try {
-      if (!req.user) {
-    return res.status(401).json({ msg: "Unauthorized" });
-  }
-const userId = req.user.id;
-    console.log("UserID",userId);
-    
+    //     if (!req.user) {
+    //   return res.status(401).json({ msg: "Unauthorized" });
+    // }
+    // console.log(req.user);
+    const userId = req.user.id;
+    console.log("UserID", userId);
 
     const query = "SELECT * FROM orders WHERE userId= ?";
-    dbConn.query(query, [userId],(err, data) => {
+    dbConn.query(query, [userId], (err, data) => {
       if (err) {
         return res.status(500).json({
           msg: err.message,
@@ -132,6 +133,60 @@ const userId = req.user.id;
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+});
+
+// edit or update
+
+route.put("/update-order/:id", Admin, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const {
+      customerName,
+      customerEmail,
+      customerPhone,
+      shippingAddress,
+      status,
+      items,
+      total,
+      notes,
+      whatsapp_message,
+    } = req.body;
+    // update orders
+    const updateQuery =
+      "UPDATE orders SET customerName=?, customerEmail=?,  customerPhone=?,   shippingAddress=?,status=?, items=?, total=?, notes=?,  whatsapp_message=? WHERE id = ? ";
+
+    dbConn.query(
+      updateQuery,
+      [
+        customerName,
+        customerEmail,
+        customerPhone,
+        shippingAddress,
+        status,
+        JSON.stringify(items),
+        total,
+        notes,
+        whatsapp_message,
+        id,
+      ],
+      (err, data) => {
+        if (err) {
+          return res.status(500).json({
+            msg: err.message,
+          });
+        }
+
+        return res.status(200).json({
+          msg: "Order updated successfully",
+        });
+      },
+    );
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message,
+    });
   }
 });
 module.exports = route;
