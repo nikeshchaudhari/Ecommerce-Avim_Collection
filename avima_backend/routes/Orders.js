@@ -189,4 +189,37 @@ route.put("/update-order/:id", Admin, async (req, res) => {
     });
   }
 });
+
+// delete only admin
+
+route.delete("/:id", Admin, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const getOrder = "SELECT * FROM orders WHERE id = ?";
+    dbConn.query(getOrder, [id], (err, data) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (data.length === 0) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+
+      const items = data[0];
+      console.log(items);
+
+      // delete data
+
+      const deleteQuery = "DELETE FROM orders WHERE id = ?";
+      dbConn.query(deleteQuery, [id], (err, data) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        return res.status(200).json({
+          msg: "Order deleted successfully",
+        });
+      });
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message,
+    });
+  }
+});
 module.exports = route;
