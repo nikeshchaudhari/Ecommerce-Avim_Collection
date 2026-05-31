@@ -217,9 +217,61 @@ route.delete("/:id", Admin, async (req, res) => {
       });
     });
   } catch (err) {
-    return res.status(500).json({
+    return res.status(500).json({     
       error: err.message,
     });
   }
 });
+
+// total Order Amount
+
+route.get("/total-revenue",async(req,res)=>{
+  try{
+
+    const query = "SELECT SUM(total) AS totalRevenue FROM orders";
+      dbConn.query(query, (err, data) => {
+
+    if (err) {
+      return res.status(500).json({
+        msg: err.message
+      });
+    }
+
+    return res.status(200).json({
+      totalRevenue: data[0].totalRevenue || 0
+    });
+
+  });
+
+  }catch(err){
+    return res.status(503).json({
+      error:err.message
+    })
+  }
+})
+
+// today revenu
+
+route.get("/today-revenue",async(req,res)=>{
+  try{
+    const query= "SELECT SUM(total) AS todayRevenue FROM orders WHERE DATE(created_at)=CURDATE()";
+    dbConn.query(query,(err,data)=>{
+      if(err){
+        return res.status(500).json({
+        msg: err.message
+      });
+      }
+      console.log(data);
+      
+
+      return res.status(200).json({
+        todayRevenues: data[0].todayRevenue || 0
+      });
+    })
+  }catch(err){
+    return res.status(503).json({
+      error:err.message
+    })
+  }
+})
 module.exports = route;
