@@ -4,8 +4,44 @@ import { IoIosTrendingUp } from "react-icons/io";
 import { FiShoppingBag } from "react-icons/fi";
 import { MdOutlineDiscount } from "react-icons/md";
 import { IoCubeSharp } from "react-icons/io5";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+interface RevenueData {
+  totalRevenue: number;
+  todayRevenue: number;
+}
+interface orderItems {
+  item: [];
+}
 
 const AdminDashbaord = () => {
+  const [totalRevenue, setTotalRevenue] = useState<RevenueData | null>(null);
+  const [todayRevenue, setTodayRevenue] = useState<RevenueData | null>(null);
+    const [orders, setOrders] = useState<orderItems[]>([]);
+
+  const fetchRevenue = async () => {
+    try {
+      const totalRes = await axios.get(
+        "http://localhost:3000/order/total-revenue",
+      );
+      const todayRes = await axios.get(
+        "http://localhost:3000/order/today-revenue",
+      );
+      const totalOrders = await axios.get(
+        "http://localhost:3000/order/all-order",
+      );
+      setTotalRevenue(totalRes.data.totalRevenue);
+      setTodayRevenue(todayRes.data.todayRevenues);
+      setOrders(totalOrders.data.Allorders);
+      console.log(totalOrders.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    fetchRevenue();
+  }, []);
   return (
     <>
       <nav className="">
@@ -39,9 +75,9 @@ const AdminDashbaord = () => {
                       Total Revenue
                     </span>
                     <h1 className="text-[20px] lg:text-[25px]  font-cormorant text-red-800">
-                      NPR{" "}
+                      NPR {}
                       <span className="text-[16px] lg:text-[20px]">
-                        {new Intl.NumberFormat().format(4690000)}
+                        {new Intl.NumberFormat().format(totalRevenue)}
                       </span>
                     </h1>
                     <span className=" dark:text-white/60 text-[10px] lg:text-[12px] text-black/60">
@@ -65,7 +101,7 @@ const AdminDashbaord = () => {
                     <h1 className="text-[20px] lg:text-[25px]  font-cormorant text-red-800">
                       NPR{" "}
                       <span className="text-[16px] lg:text-[20px]">
-                        {new Intl.NumberFormat().format(0)}
+                        {new Intl.NumberFormat().format(todayRevenue)}
                       </span>
                     </h1>
                     <span className=" dark:text-white/60 text-[10px] lg:text-[12px] text-black/60">
@@ -88,7 +124,8 @@ const AdminDashbaord = () => {
                     <h1 className="text-[20px] lg:text-[25px] font-cormorant text-red-800">
                       NPR{" "}
                       <span className="text-[20px] lg:text-[25px]">
-                        {new Intl.NumberFormat().format(12)}
+                        {/*  */}
+                        {orders.length}
                       </span>
                     </h1>
                     <span className=" dark:text-white/60 text-[10px] lg:text-[12px] text-black/60">
