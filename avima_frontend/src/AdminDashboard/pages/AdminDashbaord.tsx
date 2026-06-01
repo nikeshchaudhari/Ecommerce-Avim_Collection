@@ -14,6 +14,7 @@ interface RevenueData {
 interface orderItems {
   item: [];
 }
+ 
 
 const AdminDashbaord = () => {
   const [totalRevenue, setTotalRevenue] = useState<RevenueData | null>(null);
@@ -123,7 +124,7 @@ const AdminDashbaord = () => {
                     </span>
                     <h1 className="text-[20px] lg:text-[25px] font-cormorant text-red-800">
                       NPR{" "}
-                      <span className="text-[20px] lg:text-[25px]">
+                      <span className="text-[20px] lg:text-[20px]">
                         {/*  */}
                         {orders.length}
                       </span>
