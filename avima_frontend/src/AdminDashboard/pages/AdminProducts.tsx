@@ -41,6 +41,10 @@ const AdminProducts = () => {
       return;
     }
 
+    const preview = files.map((file) => URL.createObjectURL(file));
+
+    setPhotos((prev) => [...prev, ...preview]);
+
     setLoading(true);
 
     setTimeout(() => {
@@ -49,6 +53,11 @@ const AdminProducts = () => {
     }, 1500);
   };
 
+  // delete photo preview
+
+  const handleDelete = (i: any) => {
+    setPhotos((prev) => prev.filter((_, index) => index !== i));
+  };
   return (
     <>
       <nav className="">
@@ -61,7 +70,7 @@ const AdminProducts = () => {
             <AdminSideBar />
           </aside>
           <section className="flex-1 px-5 lg:px-10 pt-5">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between  ">
               <div className="mb-5">
                 <span className="text-[12px] tracking-[4px] text-yellow-500">
                   Catalog
@@ -84,7 +93,7 @@ const AdminProducts = () => {
                 <button
                   type="button"
                   onClick={() => setOpen(!open)}
-                  className="bg-yellow-500 px-6  py-1.5 rounded hover:bg-yellow-400 transition duration-300 font-inter"
+                  className="bg-yellow-500 w-40 py-2 mx-15 md:mx-0 mt-3 md:mt-0  md:px-6  md:py-1.5 rounded hover:bg-yellow-400 transition duration-300 font-inter"
                 >
                   + New product
                 </button>
@@ -93,7 +102,7 @@ const AdminProducts = () => {
             {/* added catalog  */}
             {open && (
               <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
-                <div className="bg-white dark:bg-black dark:border w-full mx-2 p-3  lg:w-1/2 lg:p-5 rounded shadow-lg relative overflow-hidden">
+                <div className="bg-white dark:bg-black dark:border w-full mx-3 p-3  lg:w-1/2 lg:p-5 rounded shadow-lg relative  max-h-[90vh] overflow-y-auto transition duration-700  ">
                   {/* close button */}
                   <button
                     onClick={() => setOpen(false)}
@@ -144,6 +153,93 @@ const AdminProducts = () => {
                         <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin" />
                       </div>
                     )}
+                  </div>
+                  <div className="grid lg:grid-cols-5 grid-cols-3 gap-2 mt-4 ">
+                    {photos.map((img, i) => (
+                      <div key={i} className="relative group  ">
+                        <img
+                          src={img}
+                          alt="preview"
+                          className="w-full h-40 object-cover rounded hover:bg-black "
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition rounded" />
+
+                        <button
+                          className=" lg:hidden active:block group-hover:block hover:bg-black absolute  top-1 right-1 bg-black/60 text-white p-1 rounded-full"
+                          onClick={() => handleDelete(i)}
+                        >
+                          <RxCross2 />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  {/* input field */}
+                  <div className="flex justify-between gap-2 mt-5">
+                    <div className="flex flex-col w-1/2">
+                      <label htmlFor="name">Name</label>
+                      <input
+                        type="text"
+                        placeholder="Enter product name.."
+                        className=" border border-gray-300
+    px-3 py-2 rounded
+    focus:ring-0.5
+    focus:ring-amber-500
+    focus:border-amber-600 outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col w-1/2">
+                      <label htmlFor="name">Slug</label>
+                      <input
+                        type="text"
+                        placeholder="Enter slug "
+                        className="border border-gray-300
+    px-3 py-2 rounded
+    focus:ring-0.5
+    focus:ring-amber-500
+    focus:border-amber-600 outline-none"
+                      />
+                    </div>
+                  
+                  </div>
+                  {/*  */}
+
+                  <div className="flex justify-between gap-2 mt-5">
+                    <div className="flex flex-col w-1/2">
+                      <label htmlFor="categoty">Category</label>
+                      <input
+                        type="text"
+                        placeholder="Enter slug "
+                        className="border border-gray-300
+    px-3 py-2 rounded
+    focus:ring-0.5
+    focus:ring-amber-500
+    focus:border-amber-600 outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col w-1/2">
+                      <label htmlFor="gender">Gender</label>
+                      <input
+                        type="text"
+                        placeholder="Enter slug "
+                        className="border border-gray-300
+    px-3 py-2 rounded
+    focus:ring-0.5
+    focus:ring-amber-500
+    focus:border-amber-600 outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col w-1/2">
+                      <label htmlFor="stock">Stock</label>
+                      <input
+                        type="text"
+                        placeholder="Enter slug "
+                        className="border border-gray-300
+    px-3 py-2 rounded
+    focus:ring-0.5
+    focus:ring-amber-500
+    focus:border-amber-600 outline-none"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
