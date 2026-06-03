@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
@@ -18,7 +18,7 @@ interface Product {
 }
 const AdminProductView = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState([]);
+  const [, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
