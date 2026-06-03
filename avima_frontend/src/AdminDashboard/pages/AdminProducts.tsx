@@ -15,8 +15,8 @@ const AdminProducts = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState<string[]>([]);
-  const [categories, setCategories] = useState([]);
-  const[products,setProducts]= useState([])
+  const [categories, setCategories] = useState<string[]>([]);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     if (open) {
@@ -61,7 +61,7 @@ const AdminProducts = () => {
       discount_starts_at: "",
       discount_ends_at: "",
       featured: false,
-      active: false, 
+      active: false,
       colors: "",
       sizes: "",
       description: "",
@@ -77,7 +77,7 @@ const AdminProducts = () => {
         const formData = new FormData();
         formData.append("name", values.name);
         formData.append("slug", values.slug);
-        formData.append("categoryId", values.category);
+        formData.append("category", values.category);
         formData.append("gender", values.gender);
         formData.append("stock", String(values.stock));
         formData.append("price", String(values.price));
@@ -88,7 +88,7 @@ const AdminProducts = () => {
         formData.append("discount_starts_at", values.discount_starts_at);
         formData.append("discount_ends_at", values.discount_ends_at);
         formData.append("featured", String(values.featured));
-        formData.append("active", String(values.active)); 
+        formData.append("active", String(values.active));
         formData.append("colors", values.colors);
         formData.append("sizes", values.sizes);
         formData.append("description", values.description);
@@ -105,7 +105,7 @@ const AdminProducts = () => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         resetForm();
         setOpen(false);
@@ -150,11 +150,19 @@ const AdminProducts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const catRes = await axios.get("http://localhost:3000/category/all-data");
-        const resProduct = await axios.get("http://localhost:3000/product/all-products");
-        setProducts(resProduct.data.products)
+        // const catRes = await axios.get("http://localhost:3000/category/all-data");
+        const resProduct = await axios.get(
+          "http://localhost:3000/product/all-products",
+        );
+        const allProducts = resProduct.data.products;
 
-        setCategories(catRes.data.categories || []);
+        const uniqueData = Array.from(
+          new Set(allProducts.map((items: any) => items.category)),
+        ).filter(Boolean);
+        setProducts(allProducts);
+        setCategories(uniqueData as string[]);
+
+        // setCategories(catRes.data.categories || []);
       } catch (err) {
         console.error(err);
       }
@@ -169,21 +177,24 @@ const AdminProducts = () => {
         <Navbar />
       </nav>
 
-      <main className="overflow-x-hidden">
+      <main className="">
         <div className="bg-[#f9efe7] dark:bg-black min-h-full lg:flex">
           <aside className="hidden lg:block">
             <AdminSideBar />
           </aside>
           <section className="flex-1 px-5 lg:px-10 pt-5">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center flex-wrap">
               <div className="mb-5">
-                <span className="text-[12px] tracking-[4px] text-yellow-500">Catalog</span>
-                <h2 className="text-[25px] md:text-[30px] font-cormorant">Products</h2>
+                <span className="text-[12px] tracking-[4px] text-yellow-500">
+                  Catalog
+                </span>
+                <h2 className="text-[25px] md:text-[30px] font-cormorant">
+                  Products
+                </h2>
                 <p className="font-inter text-black/60">
-                {products.length} item(s)
+                  {products.length} item(s)
                 </p>
               </div>
-
 
               <div className="relative">
                 <input
@@ -216,10 +227,14 @@ const AdminProducts = () => {
                   </button>
                   <div className="flex items-center gap-2 text-yellow-500">
                     <WiStars />
-                    <span className="tracking-[4px] text-[12px] font-inter text-yellow-500">CATALOG</span>
+                    <span className="tracking-[4px] text-[12px] font-inter text-yellow-500">
+                      CATALOG
+                    </span>
                   </div>
 
-                  <h2 className="text-[25px] font-cormorant mb-4 font-light">New product</h2>
+                  <h2 className="text-[25px] font-cormorant mb-4 font-light">
+                    New product
+                  </h2>
 
                   <form onSubmit={handleSubmit}>
                     <h2 className="font-inter">Product images</h2>
@@ -231,7 +246,9 @@ const AdminProducts = () => {
                         <SlCloudUpload size={35} className="text-red-500" />
                       </div>
                       <p>Drag & drop or click to browse</p>
-                      <p className="text-sm text-gray-500">JPEG, JPG, PNG only</p>
+                      <p className="text-sm text-gray-500">
+                        JPEG, JPG, PNG only
+                      </p>
 
                       <input
                         type="file"
@@ -256,7 +273,9 @@ const AdminProducts = () => {
                       )}
 
                       {touched.photos && errors.photos && (
-                        <p className="text-sm text-red-500">{String(errors.photos)}</p>
+                        <p className="text-sm text-red-500">
+                          {String(errors.photos)}
+                        </p>
                       )}
                     </div>
 
@@ -293,7 +312,9 @@ const AdminProducts = () => {
                           className="min:w-full border border-gray-300 px-3 py-2 rounded focus:ring-0.5 focus:ring-amber-500 focus:border-amber-600 outline-none"
                         />
                         {touched.name && errors.name && (
-                          <p className="text-sm text-red-500">{errors.name} *</p>
+                          <p className="text-sm text-red-500">
+                            {errors.name} *
+                          </p>
                         )}
                       </div>
                       <div className="flex flex-col w-full md:w-1/2">
@@ -308,7 +329,9 @@ const AdminProducts = () => {
                           className="border border-gray-300 px-3 py-2 rounded focus:ring-0.5 focus:ring-amber-500 focus:border-amber-600 outline-none"
                         />
                         {touched.slug && errors.slug && (
-                          <p className="text-sm text-red-500">{errors.slug} *</p>
+                          <p className="text-sm text-red-500">
+                            {errors.slug} *
+                          </p>
                         )}
                       </div>
                     </div>
@@ -325,13 +348,15 @@ const AdminProducts = () => {
                         >
                           <option value="">Select category</option>
                           {categories.map((cat: any) => (
-                            <option key={cat.id} value={cat.id}>
-                              {cat.categoryName}
+                            <option key={cat} value={cat}>
+                              {cat}
                             </option>
                           ))}
                         </select>
                         {touched.category && errors.category && (
-                          <p className="text-sm text-red-500">{errors.category} *</p>
+                          <p className="text-sm text-red-500">
+                            {errors.category} *
+                          </p>
                         )}
                       </div>
                       <div className="flex flex-col w-full md:w-1/2">
@@ -349,7 +374,9 @@ const AdminProducts = () => {
                           <option value="unisex">Unisex</option>
                         </select>
                         {touched.gender && errors.gender && (
-                          <p className="text-sm text-red-500">{errors.gender} *</p>
+                          <p className="text-sm text-red-500">
+                            {errors.gender} *
+                          </p>
                         )}
                       </div>
                       <div className="flex flex-col w-full md:w-1/2">
@@ -380,7 +407,9 @@ const AdminProducts = () => {
                         />
                       </div>
                       <div className="flex flex-col w-full md:w-1/2">
-                        <label htmlFor="compare_price">Compare price (optional)</label>
+                        <label htmlFor="compare_price">
+                          Compare price (optional)
+                        </label>
                         <input
                           type="number"
                           name="compare_price"
@@ -430,7 +459,9 @@ const AdminProducts = () => {
                           />
                         </div>
                         <div className="flex flex-col w-full md:w-1/2">
-                          <label htmlFor="discount_amount">Or fixed amount (NPR)</label>
+                          <label htmlFor="discount_amount">
+                            Or fixed amount (NPR)
+                          </label>
                           <input
                             type="number"
                             name="discount_amount"
@@ -530,22 +561,30 @@ const AdminProducts = () => {
                           type="checkbox"
                           name="featured"
                           id="featured"
-                          onChange={(e) => setFieldValue("featured", e.target.checked)}
+                          onChange={(e) =>
+                            setFieldValue("featured", e.target.checked)
+                          }
                           checked={values.featured}
                           className="accent-red-700"
                         />
-                        <span className="ml-2 text-[12px] md:text-[16px]">Featured on homepage</span>
+                        <span className="ml-2 text-[12px] md:text-[16px]">
+                          Featured on homepage
+                        </span>
                       </div>
                       <div>
                         <input
                           type="checkbox"
                           name="active"
                           id="active"
-                          onChange={(e) => setFieldValue("active", e.target.checked)}
+                          onChange={(e) =>
+                            setFieldValue("active", e.target.checked)
+                          }
                           checked={values.active}
                           className="accent-red-700"
                         />
-                        <span className="text-[12px] md:text-[16px] ml-2">Active (visible to shoppers)</span>
+                        <span className="text-[12px] md:text-[16px] ml-2">
+                          Active (visible to shoppers)
+                        </span>
                       </div>
                     </div>
 
@@ -571,12 +610,9 @@ const AdminProducts = () => {
                 </div>
               </div>
             )}
-                          <AdminProductView/>
-
+            <AdminProductView />
           </section>
-          
         </div>
-        
       </main>
     </>
   );

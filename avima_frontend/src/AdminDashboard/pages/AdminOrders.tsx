@@ -1,8 +1,9 @@
 import { IoSearchOutline } from "react-icons/io5";
 import AdminSideBar from "../component/AdminSideBar";
 import Navbar from "../component/Navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiFilter } from "react-icons/ci";
+import axios from "axios";
 
 interface OrderItems {
   id: number;
@@ -15,15 +16,32 @@ interface Orders {
   customerEmail: string;
   customerPhone: number;
   shippingAddress: string;
-  status:string;
-  items:OrderItems[];
-  total:number;
-  notes:string;
-  whatsapp_message:string;
-  
+  status: string;
+  items: OrderItems[];
+  total: number;
+  notes: string;
+  whatsapp_message: string;
 }
 const AdminOrders = () => {
   const [open, setOpen] = useState(false);
+  const [orders, setOrders] = useState<Orders[]>([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/order/all-order");
+        setOrders(res.data.Allorders);
+      } catch (err: any) {
+        console.error("Orders ", err);
+      }
+    };
+    fetchOrders();
+  }, []);
+  if (orders.length === 0) {
+    return (
+      <div className="p-4 text-center text-stone-500">Orders Not Found</div>
+    );
+  }
   return (
     <>
       <nav className="">
@@ -43,7 +61,7 @@ const AdminOrders = () => {
                 <h2 className="text-[25px] md:text-[30px] font-cormorant">
                   Orders
                 </h2>
-                <p className="font-inter text-black/60">12 order(s)</p>
+                <p className="font-inter text-black/60">{orders.length} order(s)</p>
               </div>
 
               <div className="flex items-center gap-3 w-full md:w-auto">
@@ -71,9 +89,26 @@ const AdminOrders = () => {
               </div>
             </div>
 
-            {/*  */}
-
-            <div></div>
+            <div>
+              {orders.length === 0 ? (
+                <p>Not found</p>
+              ) : (
+                <div className="space-y-3">
+                  {orders.map((order) => (
+                    <div
+                      key={order.id}
+                      className="border p-4 rounded shadow bg-white dark:bg-black"
+                    >
+                      <h3 className="font-bold">{order.customerName}</h3>
+                      <p>{order.customerEmail}</p>
+                      <p>{order.customerPhone}</p>
+                      <p>Status: {order.status}</p>
+                      <p>Total: NPR {order.total}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </section>
         </div>
       </main>

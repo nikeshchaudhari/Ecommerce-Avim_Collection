@@ -45,10 +45,11 @@ const AdminDashbaord = () => {
   }, []);
   return (
     <>
-      <nav className="">
-        <Navbar />
-      </nav>
+      
       <main>
+         <div className="sticky top-0 z-50">
+      <Navbar />
+    </div>
         <div className="bg-[#f9efe7] dark:bg-black min-h-screen lg:flex">
           <aside className="hidden lg:block">
             <AdminSideBar />
