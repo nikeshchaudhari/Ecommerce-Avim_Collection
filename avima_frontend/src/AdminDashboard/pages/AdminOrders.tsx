@@ -39,7 +39,35 @@ const AdminOrders = () => {
     };
     fetchOrders();
   }, []);
-  // whatsapp
+  // update data
+const updateStatus = async (
+  orderId: number,
+  status: string
+) => {
+  const token = localStorage.getItem("token");
+  try {
+    await axios.put(
+      `http://localhost:3000/order/update-status/${orderId}`,
+      { status },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === orderId
+          ? { ...order, status }
+          : order
+      )
+    );
+  } catch (err) {
+    console.error(err);
+  }
+};
+  
   return (
     <>
       <nav className="">
@@ -80,7 +108,7 @@ const AdminOrders = () => {
                   <select
                     className="w-full outline-none bg-transparent dark:bg-black"
                     onClick={(e) => e.stopPropagation()}
-                    value={orders.status}
+                    
                   >
                     <option value="all_status">All Status</option>
                     <option value="pending">Pending</option>
@@ -144,7 +172,9 @@ const AdminOrders = () => {
                                         ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
                                         : order.status === "cancelled"
                                           ? "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"
-                                          : ""
+                                          :order.status === "delivered"
+                                            ? "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400"
+                                            : ""
                                 }`}
                               >
                                 {order.status}
@@ -153,20 +183,22 @@ const AdminOrders = () => {
                                 value={order.status}
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => {
-                                  e.stopPropagation();
+                                  // e.stopPropagation();
+                                   updateStatus(order.id, e.target.value)
                                 }}
                                 className="border border-stone-300 dark:border-stone-700 rounded-lg px-2 py-1 text-xs bg-white dark:bg-zinc-800 font-medium text-stone-700 dark:text-stone-300 shadow-sm cursor-pointer outline-none"
                               >
                                 <option value="pending">Pending</option>
                                 <option value="confirmed">Confirmed</option>
                                 <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
                             </div>
                           </div>
 
                           {openId === order.id && (
-                            <div className="w-full min-h-full text-[12px] md:text-[16px] mt-3 border-t border-gray-600/30 py-3 bg-[#faf7ef]">
+                            <div className="w-full min-h-full text-[12px] md:text-[16px] mt-3 border-t border-gray-600/30 py-3 bg-[#faf7ef] dark:bg-black">
                               <p className="px-4">
                                 <span className="font-semibold">Email: </span>
                                 {order.customerEmail}
@@ -216,7 +248,7 @@ const AdminOrders = () => {
 
                                 <div className="mt-2">
                                   {whatsappOpen && (
-                                    <div className="w-full border rounded border-gray-600/20 px-3 py-2 bg-white">
+                                    <div className="w-full border rounded dark:bg-gray-700 border-gray-600/20 px-3 py-2 bg-white">
                                       <p> {order.whatsapp_message}</p>
                                     </div>
                                   )}
