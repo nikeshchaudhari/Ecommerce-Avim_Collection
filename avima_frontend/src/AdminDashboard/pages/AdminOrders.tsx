@@ -28,6 +28,7 @@ const AdminOrders = () => {
   const [orders, setOrders] = useState<Orders[]>([]);
   const [whatsappOpen, setWhatsappOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all_status");
+  const [search, setSearch] = useState("");
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -40,34 +41,34 @@ const AdminOrders = () => {
     fetchOrders();
   }, []);
   // update data
-const updateStatus = async (
-  orderId: number,
-  status: string
-) => {
-  const token = localStorage.getItem("token");
-  try {
-    await axios.put(
-      `http://localhost:3000/order/update-status/${orderId}`,
-      { status },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+  const updateStatus = async (orderId: number, status: string) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.put(
+        `http://localhost:3000/order/update-status/${orderId}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId
-          ? { ...order, status }
-          : order
-      )
-    );
-  } catch (err) {
-    console.error(err);
-  }
-};
-  
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, status } : order,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+// search and filter
+
+const searchData = orders.filter((order)=>order.customerName.toLowerCase().includes(search.toLowerCase()) ||
+order.customerPhone.toString().includes(search) ||
+order.id.toString().includes(search)
+)
   return (
     <>
       <nav className="">
@@ -96,6 +97,8 @@ const updateStatus = async (
                 <div className="relative w-full md:w-72">
                   <input
                     type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search by customer, phone, id..."
                     className="w-full border border-black/10 dark:border-white/40 pl-10 pr-3 py-2 font-inter outline-none shadow"
                   />
@@ -108,7 +111,6 @@ const updateStatus = async (
                   <select
                     className="w-full outline-none bg-transparent dark:bg-black"
                     onClick={(e) => e.stopPropagation()}
-                    
                   >
                     <option value="all_status">All Status</option>
                     <option value="pending">Pending</option>
@@ -172,7 +174,7 @@ const updateStatus = async (
                                         ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
                                         : order.status === "cancelled"
                                           ? "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"
-                                          :order.status === "delivered"
+                                          : order.status === "delivered"
                                             ? "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400"
                                             : ""
                                 }`}
@@ -184,7 +186,7 @@ const updateStatus = async (
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => {
                                   // e.stopPropagation();
-                                   updateStatus(order.id, e.target.value)
+                                  updateStatus(order.id, e.target.value);
                                 }}
                                 className="border border-stone-300 dark:border-stone-700 rounded-lg px-2 py-1 text-xs bg-white dark:bg-zinc-800 font-medium text-stone-700 dark:text-stone-300 shadow-sm cursor-pointer outline-none"
                               >
