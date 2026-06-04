@@ -16,7 +16,11 @@ interface Product {
   status: "Active" | "Inactive" | "Out of Stock";
   photos: Photo[];
 }
-const AdminProductView = () => {
+interface AdminProductViewProps {
+  search: string;
+  product?: any;
+}
+const AdminProductView = ({ search }: AdminProductViewProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [, setCategories] = useState([]);
 
@@ -60,7 +64,7 @@ const AdminProductView = () => {
               </thead>
 
               <tbody>
-                {products.filter((item:any)=> Number(item.active)===1).map((items: any) => {
+                {products.filter((item:any)=> Number(item.active)===1).filter((product) => product.name.toLowerCase().includes(search.toLowerCase())).map((items: any) => {
                   // console.log(items.photos?.[0]?.url);
                   return (
                     <tr key={items.id} className=" ">

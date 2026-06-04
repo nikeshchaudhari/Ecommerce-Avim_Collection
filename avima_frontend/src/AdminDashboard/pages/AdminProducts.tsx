@@ -17,7 +17,7 @@ const AdminProducts = () => {
   const [photos, setPhotos] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [products, setProducts] = useState([]);
-
+  const[searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -170,6 +170,8 @@ const AdminProducts = () => {
 
     fetchData();
   }, []);
+// search products
+
 
   return (
     <>
@@ -199,6 +201,8 @@ const AdminProducts = () => {
               <div className="relative">
                 <input
                   type="text"
+                  value={searchTerm}
+                  onChange ={(e)=>setSearchTerm(e.target.value)}
                   placeholder="Search products...."
                   className="border border-black/10 dark:border-white/40 mx-4 pl-10 pr-3 py-1.5 font-inter outline-none shadow"
                 />
@@ -214,7 +218,7 @@ const AdminProducts = () => {
             </div>
 
             {open && (
-              <div className="fixed inset-0 bg-black/50 flex justify-center items-centerz-50">
+              <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
                 <div className="bg-white dark:bg-black dark:border w-full mx-3 p-3 lg:w-1/2 lg:p-5 rounded shadow-lg relative max-h-[90vh] overflow-y-auto transition duration-700">
                   <button
                     onClick={() => {
@@ -610,7 +614,7 @@ const AdminProducts = () => {
                 </div>
               </div>
             )}
-            <AdminProductView />
+            <AdminProductView  search={searchTerm} />
           </section>
         </div>
       </main>

@@ -124,11 +124,11 @@ order.id.toString().includes(search)
             </div>
 
             <div className="mt-2">
-              {orders.length === 0 ? (
+              {searchData.length === 0 ? (
                 <p className="text-center"> Orders Not found</p>
               ) : (
                 <div className="space-y-3">
-                  {orders.map((order: any) => {
+                  {searchData.map((order: any) => {
                     const items =
                       typeof order.items === "string"
                         ? JSON.parse(order.items)
