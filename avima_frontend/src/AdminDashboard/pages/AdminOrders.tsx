@@ -27,6 +27,7 @@ const AdminOrders = () => {
   const [openId, setOpenId] = useState(false);
   const [orders, setOrders] = useState<Orders[]>([]);
   const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all_status");
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -39,7 +40,6 @@ const AdminOrders = () => {
     fetchOrders();
   }, []);
   // whatsapp
-  const selectedOrder = orders.find((o: any) => o.id === whatsappOpen);
   return (
     <>
       <nav className="">
@@ -77,7 +77,11 @@ const AdminOrders = () => {
                 <div className="flex items-center gap-2 w-full md:w-48 border border-black/10 dark:border-white/40 px-3 py-2 font-inter shadow">
                   <CiFilter />
 
-                  <select className="w-full outline-none bg-transparent dark:bg-black">
+                  <select
+                    className="w-full outline-none bg-transparent dark:bg-black"
+                    onClick={(e) => e.stopPropagation()}
+                    value={orders.status}
+                  >
                     <option value="all_status">All Status</option>
                     <option value="pending">Pending</option>
                     <option value="confirmed">Confirmed</option>
@@ -108,19 +112,17 @@ const AdminOrders = () => {
                         >
                           <div
                             className="flex items-center justify-between "
-                            onClick={() =>
-                            {
+                            onClick={() => {
                               setOpenId(openId === order.id ? null : order.id);
-                              setWhatsappOpen(null)
-                            }
-                            }
+                              setWhatsappOpen(null);
+                            }}
                           >
                             <div className="flex px-4 ">
                               <div>
-                                <h2 className="text-base font-bold text-stone-800 dark:text-stone-200">
+                                <h2 className=" w-full whitespace-nowrap text-[12px] md:text-base font-bold text-stone-800 dark:text-stone-200">
                                   {order.id} · {order.customerName}
                                 </h2>
-                                <p className="text-xs text-stone-500 mt-1 px-2 text-[14px] pb-2   ">
+                                <p className="text-[12px] whitespace-break-spaces text-xs text-stone-500 mt-1 px-2 md:text-[14px] pb-2   ">
                                   {new Date(order.created_at).toLocaleString()}
 
                                   <span className="font-semibold text-stone-700 dark:text-stone-300 ml-2">
@@ -131,30 +133,40 @@ const AdminOrders = () => {
                             </div>
 
                             {/*  */}
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 px-2">
                               <span
-                                className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
-                                  order.status === "Confirmed"
-                                    ? "bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400"
-                                    : "bg-amber-100 text-amber-700"
+                                className={`px-2 md:px-3 py-1 rounded-full text-[10px] md:text-base lg:text-[11px] font-bold uppercase tracking-wider ${
+                                  order.status === "pending"
+                                    ? "bg-amber-100 text-amber-700"
+                                    : order.status === "confirmed"
+                                      ? "bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400"
+                                      : order.status === "shipped"
+                                        ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
+                                        : order.status === "cancelled"
+                                          ? "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"
+                                          : ""
                                 }`}
                               >
                                 {order.status}
                               </span>
                               <select
                                 value={order.status}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                }}
                                 className="border border-stone-300 dark:border-stone-700 rounded-lg px-2 py-1 text-xs bg-white dark:bg-zinc-800 font-medium text-stone-700 dark:text-stone-300 shadow-sm cursor-pointer outline-none"
                               >
-                                <option value="Pending">Pending</option>
-                                <option value="Confirmed">Confirmed</option>
-                                <option value="Shipped">Shipped</option>
-                                <option value="Cancelled">Cancelled</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="cancelled">Cancelled</option>
                               </select>
                             </div>
                           </div>
 
                           {openId === order.id && (
-                            <div className="w-full min-h-full mt-3 border-t border-gray-600/30 py-3 bg-[#faf7ef]">
+                            <div className="w-full min-h-full text-[12px] md:text-[16px] mt-3 border-t border-gray-600/30 py-3 bg-[#faf7ef]">
                               <p className="px-4">
                                 <span className="font-semibold">Email: </span>
                                 {order.customerEmail}
@@ -178,9 +190,9 @@ const AdminOrders = () => {
                                   </span>{" "}
                                 </p>
                                 {items.map((item: any) => (
-                                  <ul className="list-disc list-inside ml-5">
+                                  <ul className="list-disc list-inside ml-5 ">
                                     {" "}
-                                    <li className="font-semibold text-[14px]">
+                                    <li className="font-semibold text-[12px] md:text-[16px]">
                                       {item.name} x {item.qty} = {item.price}
                                     </li>
                                   </ul>
@@ -188,27 +200,27 @@ const AdminOrders = () => {
                               </div>
                               <div className=" px-4 mt-5">
                                 {/* whatsapp button */}
-                                 <button
+                                <button
                                   onClick={() => setWhatsappOpen(!whatsappOpen)}
                                   className="flex items-center gap-1.5 text-red-700 dark:text-red-400 hover:text-red-800 font-bold text-sm transition select-none"
                                 >
                                   <span className="text-[10px] transition-transform duration-200">
-                                    {whatsappOpen ? <BiSolidDownArrow/> : <BiSolidUpArrow/>}
+                                    {whatsappOpen ? (
+                                      <BiSolidDownArrow />
+                                    ) : (
+                                      <BiSolidUpArrow />
+                                    )}
                                   </span>
                                   Whatsapp
                                 </button>
-                                
-                                  <div className="mt-2">
-                                    {whatsappOpen &&(
+
+                                <div className="mt-2">
+                                  {whatsappOpen && (
                                     <div className="w-full border rounded border-gray-600/20 px-3 py-2 bg-white">
-                                      <p>    {order.whatsapp_message}</p>
+                                      <p> {order.whatsapp_message}</p>
                                     </div>
                                   )}
-                                  </div>
-                                
-                          
-
-                              
+                                </div>
                               </div>
                             </div>
                           )}
