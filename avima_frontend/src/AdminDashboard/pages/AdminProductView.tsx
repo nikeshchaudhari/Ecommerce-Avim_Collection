@@ -38,6 +38,7 @@ const AdminProductView = ({ search }: AdminProductViewProps) => {
     fetchProducts();
   }, []);
 
+  const searchProduct = products.filter((product) => product.name.toLowerCase().includes(search.toLowerCase()));
   return (
     <>
       <main>
@@ -64,11 +65,20 @@ const AdminProductView = ({ search }: AdminProductViewProps) => {
               </thead>
 
               <tbody>
-                {products.filter((item:any)=> Number(item.active)===1).filter((product) => product.name.toLowerCase().includes(search.toLowerCase())).map((items: any) => {
+               {searchProduct.length===0?(
+                <tr>
+                  <td colSpan={8} className="p-3 text-center text-gray-500">
+                    No products found.
+                  </td>
+                </tr>
+               ):(
+                <div>
+                   {searchProduct.filter((item:any)=> Number(item.active)===1).map((items: any) => {
                   // console.log(items.photos?.[0]?.url);
                   return (
                     <tr key={items.id} className=" ">
-                      <td className="p-3">
+                      <td colSpan={8} className="border-b bg-red-600 border-gray-300">
+                        <td className="p-3" >
                         <img
                           src={JSON.parse(items.photos)[0]?.url}
                           className="w-16 h-16 object-cover rounded"
@@ -116,9 +126,12 @@ const AdminProductView = ({ search }: AdminProductViewProps) => {
                           </button>
                         </div>
                       </td>
+                      </td>
                     </tr>
                   );
                 })}
+                </div>
+               )}
               </tbody>
             </table>
           </div>
