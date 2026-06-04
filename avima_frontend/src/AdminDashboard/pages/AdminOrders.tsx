@@ -4,6 +4,7 @@ import Navbar from "../component/Navbar";
 import { useEffect, useState } from "react";
 import { CiFilter } from "react-icons/ci";
 import axios from "axios";
+import { BiSolidDownArrow, BiSolidUpArrow } from "react-icons/bi";
 
 interface OrderItems {
   id: number;
@@ -25,8 +26,7 @@ interface Orders {
 const AdminOrders = () => {
   const [openId, setOpenId] = useState(false);
   const [orders, setOrders] = useState<Orders[]>([]);
-  const[whatsapp,setWhatsapp] = useState<Orders[]>([])
-
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -38,7 +38,8 @@ const AdminOrders = () => {
     };
     fetchOrders();
   }, []);
-
+  // whatsapp
+  const selectedOrder = orders.find((o: any) => o.id === whatsappOpen);
   return (
     <>
       <nav className="">
@@ -50,7 +51,7 @@ const AdminOrders = () => {
             <AdminSideBar />
           </aside>
           <section className="flex-1 px-5 lg:px-10 pt-5">
-            <div className="flex justify-between items-center flex-wrap gap-4">
+            <div className="flex md:justify-between items-center flex-wrap gap-4">
               <div className="mb-5">
                 <span className="text-[12px] tracking-[4px] text-yellow-500">
                   Operations
@@ -76,7 +77,7 @@ const AdminOrders = () => {
                 <div className="flex items-center gap-2 w-full md:w-48 border border-black/10 dark:border-white/40 px-3 py-2 font-inter shadow">
                   <CiFilter />
 
-                  <select className="w-full outline-none bg-transparent">
+                  <select className="w-full outline-none bg-transparent dark:bg-black">
                     <option value="all_status">All Status</option>
                     <option value="pending">Pending</option>
                     <option value="confirmed">Confirmed</option>
@@ -88,7 +89,7 @@ const AdminOrders = () => {
               </div>
             </div>
 
-            <div className="">
+            <div className="mt-2">
               {orders.length === 0 ? (
                 <p className="text-center"> Orders Not found</p>
               ) : (
@@ -103,19 +104,24 @@ const AdminOrders = () => {
                       <>
                         <div
                           key={order.id}
-                          className="border border-gray-500/30 pt-2 rounded shadow bg-white/60 hover:bg-[#fcf6f6] dark:bg-black"
-                          
+                          className="border border-gray-500/30 pt-2 rounded shadow bg-white/60 hover:bg-[#fcf6f6] dark:bg-black dark:hover:bg-gray-600/20"
                         >
-                          <div className="flex items-center justify-between " onClick={() =>
-                            setOpenId(openId === order.id ? null : order.id)
-                          }>
-                            <div className="flex px-4 " >
+                          <div
+                            className="flex items-center justify-between "
+                            onClick={() =>
+                            {
+                              setOpenId(openId === order.id ? null : order.id);
+                              setWhatsappOpen(null)
+                            }
+                            }
+                          >
+                            <div className="flex px-4 ">
                               <div>
                                 <h2 className="text-base font-bold text-stone-800 dark:text-stone-200">
-                                  #{order.id} · {order.customerName}
+                                  {order.id} · {order.customerName}
                                 </h2>
                                 <p className="text-xs text-stone-500 mt-1 px-2 text-[14px] pb-2   ">
-                                   {new Date(order.created_at).toLocaleString()}
+                                  {new Date(order.created_at).toLocaleString()}
 
                                   <span className="font-semibold text-stone-700 dark:text-stone-300 ml-2">
                                     NPR {order.total}
@@ -180,10 +186,30 @@ const AdminOrders = () => {
                                   </ul>
                                 ))}
                               </div>
-                              <div className=" px-4">
-                                <p>WhatsApp message</p>
-                              </div>
+                              <div className=" px-4 mt-5">
+                                {/* whatsapp button */}
+                                 <button
+                                  onClick={() => setWhatsappOpen(!whatsappOpen)}
+                                  className="flex items-center gap-1.5 text-red-700 dark:text-red-400 hover:text-red-800 font-bold text-sm transition select-none"
+                                >
+                                  <span className="text-[10px] transition-transform duration-200">
+                                    {whatsappOpen ? <BiSolidDownArrow/> : <BiSolidUpArrow/>}
+                                  </span>
+                                  Whatsapp
+                                </button>
+                                
+                                  <div className="mt-2">
+                                    {whatsappOpen &&(
+                                    <div className="w-full border rounded border-gray-600/20 px-3 py-2 bg-white">
+                                      <p>    {order.whatsapp_message}</p>
+                                    </div>
+                                  )}
+                                  </div>
+                                
+                          
 
+                              
+                              </div>
                             </div>
                           )}
                         </div>
