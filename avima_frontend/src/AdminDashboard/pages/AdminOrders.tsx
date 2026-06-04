@@ -23,8 +23,9 @@ interface Orders {
   whatsapp_message: string;
 }
 const AdminOrders = () => {
-  const [open, setOpen] = useState(false);
+  const [openId, setOpenId] = useState(false);
   const [orders, setOrders] = useState<Orders[]>([]);
+  const[whatsapp,setWhatsapp] = useState<Orders[]>([])
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -37,11 +38,7 @@ const AdminOrders = () => {
     };
     fetchOrders();
   }, []);
-  if (orders.length === 0) {
-    return (
-      <div className="p-4 text-center text-stone-500">Orders Not Found</div>
-    );
-  }
+
   return (
     <>
       <nav className="">
@@ -61,7 +58,9 @@ const AdminOrders = () => {
                 <h2 className="text-[25px] md:text-[30px] font-cormorant">
                   Orders
                 </h2>
-                <p className="font-inter text-black/60">{orders.length} order(s)</p>
+                <p className="font-inter text-black/60">
+                  {orders.length} order(s)
+                </p>
               </div>
 
               <div className="flex items-center gap-3 w-full md:w-auto">
@@ -89,23 +88,108 @@ const AdminOrders = () => {
               </div>
             </div>
 
-            <div>
+            <div className="">
               {orders.length === 0 ? (
-                <p>Not found</p>
+                <p className="text-center"> Orders Not found</p>
               ) : (
                 <div className="space-y-3">
-                  {orders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="border p-4 rounded shadow bg-white dark:bg-black"
-                    >
-                      <h3 className="font-bold">{order.customerName}</h3>
-                      <p>{order.customerEmail}</p>
-                      <p>{order.customerPhone}</p>
-                      <p>Status: {order.status}</p>
-                      <p>Total: NPR {order.total}</p>
-                    </div>
-                  ))}
+                  {orders.map((order: any) => {
+                    const items =
+                      typeof order.items === "string"
+                        ? JSON.parse(order.items)
+                        : order.items;
+
+                    return (
+                      <>
+                        <div
+                          key={order.id}
+                          className="border border-gray-500/30 pt-2 rounded shadow bg-white/60 hover:bg-[#fcf6f6] dark:bg-black"
+                          
+                        >
+                          <div className="flex items-center justify-between " onClick={() =>
+                            setOpenId(openId === order.id ? null : order.id)
+                          }>
+                            <div className="flex px-4 " >
+                              <div>
+                                <h2 className="text-base font-bold text-stone-800 dark:text-stone-200">
+                                  #{order.id} · {order.customerName}
+                                </h2>
+                                <p className="text-xs text-stone-500 mt-1 px-2 text-[14px] pb-2   ">
+                                   {new Date(order.created_at).toLocaleString()}
+
+                                  <span className="font-semibold text-stone-700 dark:text-stone-300 ml-2">
+                                    NPR {order.total}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+
+                            {/*  */}
+                            <div className="flex items-center gap-3">
+                              <span
+                                className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+                                  order.status === "Confirmed"
+                                    ? "bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400"
+                                    : "bg-amber-100 text-amber-700"
+                                }`}
+                              >
+                                {order.status}
+                              </span>
+                              <select
+                                value={order.status}
+                                className="border border-stone-300 dark:border-stone-700 rounded-lg px-2 py-1 text-xs bg-white dark:bg-zinc-800 font-medium text-stone-700 dark:text-stone-300 shadow-sm cursor-pointer outline-none"
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Cancelled">Cancelled</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {openId === order.id && (
+                            <div className="w-full min-h-full mt-3 border-t border-gray-600/30 py-3 bg-[#faf7ef]">
+                              <p className="px-4">
+                                <span className="font-semibold">Email: </span>
+                                {order.customerEmail}
+                              </p>
+                              <p className="px-4">
+                                <span className="font-semibold">Phone: </span>{" "}
+                                {order.customerPhone}
+                              </p>
+                              <p className="px-4">
+                                <span className="font-semibold">Address: </span>{" "}
+                                {order.shippingAddress}
+                              </p>
+                              <p className="px-4">
+                                <span className="font-semibold">Notes: </span>{" "}
+                                {order.notes}
+                              </p>
+                              <div className=" px-4">
+                                <p>
+                                  <span className="font-semibold">
+                                    Items:{" "}
+                                  </span>{" "}
+                                </p>
+                                {items.map((item: any) => (
+                                  <ul className="list-disc list-inside ml-5">
+                                    {" "}
+                                    <li className="font-semibold text-[14px]">
+                                      {item.name} x {item.qty} = {item.price}
+                                    </li>
+                                  </ul>
+                                ))}
+                              </div>
+                              <div className=" px-4">
+                                <p>WhatsApp message</p>
+                              </div>
+
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    );
+                  })}
                 </div>
               )}
             </div>
