@@ -27,7 +27,7 @@ const AdminUsers = () => {
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [Amount, setAmount] = useState<any[]>([]);
-
+const [searchTerm,setSearchTerm] = useState("")
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -64,6 +64,9 @@ const AdminUsers = () => {
     fetchOrders();
   }, []);
 
+//   search
+const searchUsers = users.filter((user)=>user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||user.email.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
     <>
       <main>
@@ -89,8 +92,8 @@ const AdminUsers = () => {
               <div className="relative">
                 <input
                   type="text"
-                  // value={searchTerm}
-                  // onChange ={(e)=>setSearchTerm(e.target.value)}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search name or email...."
                   className="border border-black/10 dark:border-white/40 mx-4 pl-10 pr-3 py-1.5 font-inter outline-none shadow"
                 />
@@ -119,7 +122,7 @@ const AdminUsers = () => {
                     </thead>
 
                     <tbody className=" divide-stone-200/80 dark:divide-stone-800">
-                      {users.length === 0 ? (
+                      {searchUsers.length === 0 ? (
                         <tr>
                           <td
                             colSpan={7}
@@ -129,7 +132,7 @@ const AdminUsers = () => {
                           </td>
                         </tr>
                       ) : (
-                        users.map((user: any) => {
+                        searchUsers.map((user: any) => {
                           // user_Amount Spend
                           const userAmount = Amount.find(
                             (s: any) => Number(s.userId) === Number(user.id),
