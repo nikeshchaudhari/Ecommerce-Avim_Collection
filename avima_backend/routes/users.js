@@ -4,6 +4,7 @@ const dbConn = require("../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Auth = require("../middleware/Auth");
+const Admin = require("../middleware/Admin");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
 
@@ -16,7 +17,8 @@ cloudinary.config({
 // post data
 route.post("/add-user", async (req, res) => {
   try {
-    const { fullName, email, password, role, phone, address } = req.body;
+    const { fullName, email, password, phone, address } = req.body;
+    const role = "user";
 
     if (!fullName || !email || !password || !phone || !address) {
       return res.status(400).json({ msg: "All fields required" });
@@ -139,7 +141,7 @@ route.post("/login", async (req, res) => {
 
       const token = await jwt.sign(
         {
-          uId: user.id,
+          id: user.id,
           role: user.role,
           email: user.email,
         },
@@ -155,6 +157,7 @@ route.post("/login", async (req, res) => {
         uId: user.id,
         fullName: user.fullName,
         email: user.email,
+        role: user.role,
         token,
       });
     });
@@ -260,9 +263,9 @@ route.delete("/:id", Auth, (req, res) => {
 
       // delete photo
 
-     if (user.photoId) {
-      await cloudinary.uploader.destroy(user.photoId);
-    }
+      if (user.photoId) {
+        await cloudinary.uploader.destroy(user.photoId);
+      }
       const deleteQuery = "DELETE FROM users WHERE id = ?";
       dbConn.query(deleteQuery, [id], async (err, data) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -275,5 +278,32 @@ route.delete("/:id", Auth, (req, res) => {
     console.log("error");
   }
 });
+
+// users-orders
+route.get("/user-orders",  (req, res) => {
+  try {
+    const userId = req.params.id;
+    const query = "SELECT u.id, COUNT(o.id) AS totalOrders FROM users u LEFT JOIN orders o ON  u.id = o.userId GROUP BY u.id ";
+    dbConn.query(query,[userId],(err,data)=>{
+      if(err){
+        return res.status(500).json({
+          error: err.message,
+        });
+      }
+      return res.status(200).json({
+        msg:"User Orders",
+        orders:data,
+      });
+    })
+
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message,
+    });
+  }
+});
+
+// total orders
+
 
 module.exports = route;
