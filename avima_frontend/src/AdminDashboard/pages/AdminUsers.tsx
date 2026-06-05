@@ -8,25 +8,26 @@ import { useParams } from "react-router";
 
 interface Users {
   fullName: string;
-  id: string;
+  id: number | string;
   email: string;
   joined: string;
   orders: number;
   spent: string;
   status: "Active" | "Banned" | string;
 }
-interface UserOrder {
+
+interface Order {
+  id: string | number;
+  userId?: string | number;
   totalOrders: number;
 }
+
 const AdminUsers = () => {
   const [users, setUsers] = useState<Users[]>([]);
-  const [orders, setOrders] = useState([]);
-  const [UserId, setUserId] = useState<UserOrder[]>([]);
 
-  console.log(UserId);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-      
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
@@ -46,10 +47,8 @@ const AdminUsers = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/users/user-orders/`,
-        );
-        setUserId(res.data.orders);
+        const res = await axios.get(`http://localhost:3000/users/user-orders/`);
+        setOrders(res.data.orders);
 
         console.log(res.data.orders);
       } catch (err) {
@@ -59,6 +58,7 @@ const AdminUsers = () => {
 
     fetchOrders();
   }, []);
+
   return (
     <>
       <main>
@@ -125,18 +125,22 @@ const AdminUsers = () => {
                         </tr>
                       ) : (
                         users.map((user: any) => {
-                            // console.log(user.createdAt);
+                          console.log("user.id:", user.id);
+                          //   const total = orders.filter(
+                          //     (o: any) => Number(o.userId) === Number(user.id),
+                          //   ).length;
+                          //   console.log("total orders for user:", total);
+
                           return (
                             <>
                               <tr
                                 key={user.id}
-                               
                                 className="hover:bg-[#fcf6f6] dark:hover:bg-gray-600/20 cursor-pointer text-sm text-stone-800 dark:text-stone-200 transition"
                               >
                                 <td className="px-6 font-bold text-black dark:text-white truncate">
                                   {user.fullName}
                                 </td>
-                                <td className="px-6 font-bold text-black dark:text-white truncate">
+                                <td className="px-6  text-black dark:text-white truncate">
                                   {user.role}
                                 </td>
 
@@ -145,18 +149,17 @@ const AdminUsers = () => {
                                 </td>
 
                                 <td className="px-6  text-stone-600 dark:text-stone-400">
-                                  {new Date(user.createdAt).toLocaleDateString("en-US")}
+                                  {new Date(user.createdAt).toLocaleDateString(
+                                    "en-US",
+                                  )}
                                 </td>
 
-                                <td className="px-6  text-stone-600 dark:text-stone-400">
-                                  <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
-                                    {
-                                        UserId.map((user)=>(
-                                            <div>
-                                                {user.totalOrders.id}
-                                            </div>
-                                        ))
-                                    }
+                                <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
+                                  <td className="px-6 text-center ">
+                                    {orders.find(
+                                      (o: any) =>
+                                        Number(o.id) === Number(user.id),
+                                    )?.totalOrders || 0}
                                   </td>
                                 </td>
                                 <td className="px-6  text-right font-medium">
@@ -165,7 +168,7 @@ const AdminUsers = () => {
 
                                 <td className="px-6  text-center">
                                   <span className="text-emerald-600 text-xs font-medium">
-                                    {user.status }
+                                    {user.status}
                                   </span>
                                 </td>
 
