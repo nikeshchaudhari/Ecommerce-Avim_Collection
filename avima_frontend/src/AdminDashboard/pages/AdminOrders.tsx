@@ -27,7 +27,7 @@ const AdminOrders = () => {
   const [openId, setOpenId] = useState(false);
   const [orders, setOrders] = useState<Orders[]>([]);
   const [whatsappOpen, setWhatsappOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState("all_status");
+  const [selectedStatus, setSelectedStatus] = useState("all_status");
   const [search, setSearch] = useState("");
   useEffect(() => {
     const fetchOrders = async () => {
@@ -63,12 +63,18 @@ const AdminOrders = () => {
       console.error(err);
     }
   };
-// search and filter
+  // search and filter
 
-const searchData = orders.filter((order)=>order.customerName.toLowerCase().includes(search.toLowerCase()) ||
-order.customerPhone.toString().includes(search) ||
-order.id.toString().includes(search)
-)
+  const searchData = orders.filter(
+    (order) =>{
+      const matchSearch = order.customerName.toLowerCase().includes(search.toLowerCase()) ||
+      order.customerPhone.toString().includes(search) ||
+      order.id.toString().includes(search);
+
+      const matchStatus = selectedStatus === "all_status" || order.status === selectedStatus;
+      return matchSearch && matchStatus;
+    }
+  );
   return (
     <>
       <nav className="">
@@ -109,6 +115,8 @@ order.id.toString().includes(search)
                   <CiFilter />
 
                   <select
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
                     className="w-full outline-none bg-transparent dark:bg-black"
                     onClick={(e) => e.stopPropagation()}
                   >
