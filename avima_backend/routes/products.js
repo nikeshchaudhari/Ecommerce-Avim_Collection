@@ -4,6 +4,7 @@ const dbConn = require("../config/db");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
 const Auth = require("../middleware/Auth");
+const Admin = require("../middleware/Admin");
 require("dotenv").config();
 
 // add products
@@ -98,24 +99,27 @@ require("dotenv").config();
 // });
 
 // multiple product added
-route.post("/add-products", Auth, async (req, res) => {
+route.post("/add-products", Admin, async (req, res) => {
   try {
     const {
       name,
       gender,
       description,
+      story,
       price,
-      discount,
+      discount_percent,
+      discount_amount,
       stock,
       slug,
       sizes,
       colors,
+      active,
       brand,
       featured,
       status,
       discount_starts_at,
       discount_ends_at,
-      categoryId,
+      category,
     } = req.body;
 
     let photosArray = [];
@@ -139,17 +143,17 @@ route.post("/add-products", Auth, async (req, res) => {
 
         photosArray.push({
           url: upload.secure_url,
-          photoId: upload.public_id, // 👈 EACH IMAGE OWN ID
+          photoId: upload.public_id, 
         });
       }
     }
 
     const query = `
       INSERT INTO products
-      (name, gender, description, price, discount, stock, slug,
-       sizes, colors, brand, featured, status, photos,
-       discount_starts_at, discount_ends_at, categoryId)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      (name, gender, description,story, price, discount_percent,discount_amount, stock, slug,
+       sizes, colors,active, brand, featured, status, photos,
+       discount_starts_at, discount_ends_at, category)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     `;
 
     dbConn.query(
@@ -158,19 +162,22 @@ route.post("/add-products", Auth, async (req, res) => {
         name,
         gender,
         description,
+        story,
         price,
-        discount,
+        discount_percent,
+        discount_amount,
         stock,
         slug,
         JSON.stringify(sizes),
         JSON.stringify(colors),
+        active,
         brand,
         featured,
         status,
-        JSON.stringify(photosArray), // 👈 IMPORTANT
+        JSON.stringify(photosArray), // IMPORTANT
         discount_starts_at,
         discount_ends_at,
-        Number(categoryId),
+        category,
       ],
       (err, result) => {
         if (err) {
@@ -370,19 +377,91 @@ route.put("/:id", Auth, async (req, res) => {
       }
     });
 
-    let newPhoto = [];
+    const row = "SELECT photos FROM products WHERE id =?";
+
+    dbConn.query([id]);
+
+    let oldPhotos = JSON.parse(row[0].photos || "[]");
+    // console.log(oldPhotos);
+
+    let finalPhoto = oldPhotos;
 
     if (req.files && req.files.photos) {
-      let files = req.files.photos;
+      // delete old photo
 
+      for (let i = 0; i < oldPhotos.length; i++) {
+        await cloudinary.uploader.destroy(oldPhotos[i].photoId);
+      }
+
+      // new upload
+
+      let files = req.files.photos;
       if (!Array.isArray(files)) {
         files = [files];
       }
+      let newPhotos = [];
 
       for (let i = 0; i < files.length; i++) {
+        const upload = await cloudinary.uploader.upload(files[i].tempFilePath, {
+          folder: "Avima/products",
+        });
+
+        newPhotos.push({
+          url: upload.secure_url,
+          photoId: upload.public_id,
+        });
         
       }
+finalPhoto = newPhotos;
+
     }
+    
+ const queryProducts = `
+      UPDATE products SET
+        name=?,
+        gender=?,
+        description=?,
+        price=?,
+        discount=?,
+        stock=?,
+        slug=?,
+        sizes=?,
+        colors=?,
+        brand=?,
+        featured=?,
+        status=?,
+        photos=?,
+        discount_starts_at=?,
+        discount_ends_at=?,
+        categoryId=?
+      WHERE id=?
+    `;
+
+    dbConn.query(queryProducts, [
+      name,
+      gender,
+      description,
+      price,
+      discount,
+      stock,
+      slug,
+      JSON.stringify(sizes),
+      JSON.stringify(colors),
+      brand,
+      featured,
+      status,
+      JSON.stringify(finalPhotos),
+      discount_starts_at,
+      discount_ends_at,
+      Number(categoryId),
+      id
+    ]);
+
+    res.json({
+      msg: "Product updated successfully",
+      photos: finalPhotos
+    });
+      
   } catch (err) {}
 });
 // delete data or products

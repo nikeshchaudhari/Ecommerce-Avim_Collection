@@ -95,7 +95,7 @@ route.get("/all-order", async (req, res) => {
       }
 
       return res.status(200).json({
-        msg: "All orders Data",
+        // msg: "All orders Data",
         Allorders: data,
       });
     });
@@ -141,7 +141,8 @@ route.get("/my-order", Auth, async (req, res) => {
 route.put("/update-order/:id", Admin, async (req, res) => {
   try {
     const id = req.params.id;
-
+console.log(req.params);
+    console.log(req.body);
     const {
       customerName,
       customerEmail,
@@ -217,7 +218,7 @@ route.delete("/:id", Admin, async (req, res) => {
       });
     });
   } catch (err) {
-    return res.status(500).json({     
+    return res.status(500).json({
       error: err.message,
     });
   }
@@ -225,53 +226,124 @@ route.delete("/:id", Admin, async (req, res) => {
 
 // total Order Amount
 
-route.get("/total-revenue",async(req,res)=>{
-  try{
-
+route.get("/total-revenue", async (req, res) => {
+  try {
     const query = "SELECT SUM(total) AS totalRevenue FROM orders";
-      dbConn.query(query, (err, data) => {
+    dbConn.query(query, (err, data) => {
+      if (err) {
+        return res.status(500).json({
+          msg: err.message,
+        });
+      }
 
-    if (err) {
-      return res.status(500).json({
-        msg: err.message
+      return res.status(200).json({
+        totalRevenue: data[0].totalRevenue || 0,
       });
-    }
-
-    return res.status(200).json({
-      totalRevenue: data[0].totalRevenue || 0
     });
-
-  });
-
-  }catch(err){
+  } catch (err) {
     return res.status(503).json({
-      error:err.message
-    })
+      error: err.message,
+    });
   }
-})
+});
 
 // today revenu
 
-route.get("/today-revenue",async(req,res)=>{
-  try{
-    const query= "SELECT SUM(total) AS todayRevenue FROM orders WHERE DATE(created_at)=CURDATE()";
-    dbConn.query(query,(err,data)=>{
-      if(err){
+route.get("/today-revenue", async (req, res) => {
+  try {
+    const query =
+      "SELECT SUM(total) AS todayRevenue FROM orders WHERE DATE(created_at)=CURDATE()";
+    dbConn.query(query, (err, data) => {
+      if (err) {
         return res.status(500).json({
-        msg: err.message
-      });
+          msg: err.message,
+        });
       }
       console.log(data);
-      
 
       return res.status(200).json({
-        todayRevenues: data[0].todayRevenue || 0
+        todayRevenues: data[0].todayRevenue || 0,
       });
-    })
-  }catch(err){
+    });
+  } catch (err) {
     return res.status(503).json({
-      error:err.message
-    })
+      error: err.message,
+    });
   }
-})
+});
+
+// best selling
+
+route.get("/best-selling", async (req, res) => {
+  try {
+    const query =
+      "SELECT product_id, SUM(qty) AS totalSales  FROM orders GROUP BY product_id ORDER BY orders_items DESC";
+
+    dbConn.query(query, (err, data) => {
+      if (err) {
+        return res.status(400).json({
+          msg: err.message,
+        });
+      }
+
+      return res.status(200).json({
+        selling:data
+      });
+    });
+  } catch (err) {
+    return res.status(503).json({
+      error: err.message,
+    });
+  }
+});
+
+// status update
+
+route.put("/update-status/:id", Admin, (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const query =
+    "UPDATE orders SET status=? WHERE id=?";
+
+  dbConn.query(
+    query,
+    [status, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({
+          msg: err.message,
+        });
+      }
+
+      return res.status(200).json({
+        msg: "Status updated",
+      });
+    }
+  );
+});
+
+// spend amount
+
+route.get("/spend-amount",  (req, res) => {
+
+  try{
+    const query = "SELECT userId, SUM(total) AS totalAmount FROM orders GROUP BY userId";
+    dbConn.query(query, (err, data) => {
+      if (err) {
+        return res.status(500).json({
+          msg: err.message,
+        });
+      }
+
+      return res.status(200).json({
+        spendAmount: data,
+      });
+    });
+  }catch(err){
+    return res.status(500).json({
+      error: err.message,
+    });
+  }
+});
 module.exports = route;

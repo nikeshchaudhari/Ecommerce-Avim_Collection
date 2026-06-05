@@ -280,7 +280,7 @@ route.delete("/:id", Auth, (req, res) => {
 });
 
 // users-orders
-route.get("/user-orders",  (req, res) => {
+route.get("/user-orders/",  (req, res) => {
   try {
     const userId = req.params.id;
     const query = "SELECT u.id, COUNT(o.id) AS totalOrders FROM users u LEFT JOIN orders o ON  u.id = o.userId GROUP BY u.id ";
