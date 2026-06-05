@@ -26,6 +26,7 @@ const AdminUsers = () => {
   const [users, setUsers] = useState<Users[]>([]);
 
   const [orders, setOrders] = useState<Order[]>([]);
+  const [Amount, setAmount] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -48,9 +49,13 @@ const AdminUsers = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(`http://localhost:3000/users/user-orders/`);
+        const resAmount = await axios.get(
+          `http://localhost:3000/order/spend-amount`,
+        );
         setOrders(res.data.orders);
+        setAmount(resAmount.data.spendAmount);
 
-        console.log(res.data.orders);
+        resAmount.data.spendAmount.map((item) => console.log(item.totalAmount));
       } catch (err) {
         console.error(err);
       }
@@ -125,12 +130,12 @@ const AdminUsers = () => {
                         </tr>
                       ) : (
                         users.map((user: any) => {
-                          console.log("user.id:", user.id);
-                          //   const total = orders.filter(
-                          //     (o: any) => Number(o.userId) === Number(user.id),
-                          //   ).length;
-                          //   console.log("total orders for user:", total);
+                            // user_Amount Spend
+                          const userAmount = Amount.find(
+                            (s: any) => Number(s.userId) === Number(user.id),
+                          );
 
+                         
                           return (
                             <>
                               <tr
@@ -155,15 +160,13 @@ const AdminUsers = () => {
                                 </td>
 
                                 <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
-                                  <td className="px-6 text-center ">
-                                    {orders.find(
-                                      (o: any) =>
-                                        Number(o.id) === Number(user.id),
-                                    )?.totalOrders || 0}
-                                  </td>
+                                  {orders.find(
+                                    (o: any) =>
+                                      Number(o.id) === Number(user.id),
+                                  )?.totalOrders || 0}
                                 </td>
-                                <td className="px-6  text-right font-medium">
-                                  {user.spent || "NPR 0"}
+                                <td className="px-6 py-4 text-right text-stone-600 dark:text-stone-400 ">
+                                 <span className="font-bold">$ </span>{userAmount?.totalAmount || 0}
                                 </td>
 
                                 <td className="px-6  text-center">
