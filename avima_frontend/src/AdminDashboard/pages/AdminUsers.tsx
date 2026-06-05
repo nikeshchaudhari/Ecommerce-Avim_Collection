@@ -27,7 +27,7 @@ const AdminUsers = () => {
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [Amount, setAmount] = useState<any[]>([]);
-const [searchTerm,setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -64,8 +64,12 @@ const [searchTerm,setSearchTerm] = useState("")
     fetchOrders();
   }, []);
 
-//   search
-const searchUsers = users.filter((user)=>user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||user.email.toLowerCase().includes(searchTerm.toLowerCase()));
+  //   search
+  const searchUsers = users.filter(
+    (user) =>
+      user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   return (
     <>
