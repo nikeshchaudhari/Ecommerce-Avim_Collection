@@ -4,6 +4,7 @@ import Navbar from "../component/Navbar";
 import { FiChevronRight } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "react-router";
 
 interface Users {
   fullName: string;
@@ -16,7 +17,10 @@ interface Users {
 }
 const AdminUsers = () => {
   const [users, setUsers] = useState<Users[]>([]);
-  console.log(users);
+  const [orders, setOrders] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+  console.log(selectedUserId);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -33,6 +37,23 @@ const AdminUsers = () => {
 
     fetchUsers();
   }, []);
+
+  // user-orders
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/users/user-orders/${selectedUserId}`,
+        );
+
+        console.log(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchOrders();
+  }, [selectedUserId]);
   return (
     <>
       <main>
@@ -69,9 +90,7 @@ const AdminUsers = () => {
 
             {/*  */}
             <div className="p-4 w-full max-w-6xl mx-auto">
-             
               <div className="w-full border border-stone-300/70 rounded-xl bg-[#faf6f0] dark:bg-zinc-900 shadow-sm overflow-hidden">
-        
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-left">
                     <thead>
@@ -102,6 +121,7 @@ const AdminUsers = () => {
                         users.map((user: any) => (
                           <tr
                             key={user.id}
+                            onClick={() => setSelectedUserId(selectedUserId === user.id ? null : user.id)}
                             className="hover:bg-[#fcf6f6] dark:hover:bg-gray-600/20 cursor-pointer text-sm text-stone-800 dark:text-stone-200 transition"
                           >
                             <td className="px-6 py-4 font-bold text-black dark:text-white truncate">
@@ -113,13 +133,14 @@ const AdminUsers = () => {
                             </td>
 
                             <td className="px-6 py-4 text-stone-600 dark:text-stone-400">
-                              {user.joined || "5/21/2026"}
+                              {new Date(user.created_at).toLocaleDateString("en-CA")}
                             </td>
 
-                            <td className="px-6 py-4 text-center font-medium">
-                              {user.orders || 0}
+                            <td className="px-6 py-4 text-stone-600 dark:text-stone-400">
+                              <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
+                                 {orders.filter((o: any) => o.userId === user.id).length} 
+                              </td>
                             </td>
-
                             <td className="px-6 py-4 text-right font-medium">
                               {user.spent || "NPR 0"}
                             </td>
