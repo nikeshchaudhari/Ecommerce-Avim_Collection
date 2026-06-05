@@ -118,7 +118,6 @@ const AdminProducts = () => {
     },
   });
 
-  // 2. Image upload logic now safely accesses Formik context
   const handleLoading = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
 
