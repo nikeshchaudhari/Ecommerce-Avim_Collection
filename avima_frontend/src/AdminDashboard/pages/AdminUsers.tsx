@@ -130,12 +130,11 @@ const AdminUsers = () => {
                         </tr>
                       ) : (
                         users.map((user: any) => {
-                            // user_Amount Spend
+                          // user_Amount Spend
                           const userAmount = Amount.find(
                             (s: any) => Number(s.userId) === Number(user.id),
                           );
 
-                         
                           return (
                             <>
                               <tr
@@ -166,11 +165,18 @@ const AdminUsers = () => {
                                   )?.totalOrders || 0}
                                 </td>
                                 <td className="px-6 py-4 text-right text-stone-600 dark:text-stone-400 ">
-                                 <span className="font-bold">$ </span>{userAmount?.totalAmount || 0}
+                                  <span className="font-bold">$ </span>
+                                  {userAmount?.totalAmount || 0}
                                 </td>
 
                                 <td className="px-6  text-center">
-                                  <span className="text-emerald-600 text-xs font-medium">
+                                  <span
+                                    className={
+                                      user.status === "Active"
+                                        ? "text-green-600 font-inter"
+                                        : "text-red-800 bg-red-500/20 px-2 py-1 rounded-full font-inter"
+                                    }
+                                  >
                                     {user.status}
                                   </span>
                                 </td>
