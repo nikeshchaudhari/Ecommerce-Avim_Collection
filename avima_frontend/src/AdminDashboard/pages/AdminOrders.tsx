@@ -133,7 +133,9 @@ const AdminOrders = () => {
 
             <div className="mt-2">
               {searchData.length === 0 ? (
-                <p className="text-center"> Orders Not found</p>
+                <p className="text-center border border-gray-500/30 pt-2 rounded shadow bg-white/60 hover:bg-[#fcf6f6] dark:bg-black dark:hover:bg-gray-600/20 py-3 text-gray-500">
+                  No orders match your filter
+                </p>
               ) : (
                 <div className="space-y-3">
                   {searchData.map((order: any) => {
@@ -146,7 +148,7 @@ const AdminOrders = () => {
                       <>
                         <div
                           key={order.id}
-                          className="border border-gray-500/30 pt-2 rounded shadow bg-white/60 hover:bg-[#fcf6f6] dark:bg-black dark:hover:bg-gray-600/20"
+                          className="border border-gray-500/30 pt-2 rounded-xl shadow bg-white/60 hover:bg-[#fcf6f6] dark:bg-black dark:hover:bg-gray-600/20"
                         >
                           <div
                             className="flex items-center justify-between "
