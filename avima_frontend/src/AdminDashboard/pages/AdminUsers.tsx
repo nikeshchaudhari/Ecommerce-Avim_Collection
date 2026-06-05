@@ -15,21 +15,25 @@ interface Users {
   spent: string;
   status: "Active" | "Banned" | string;
 }
+interface UserOrder {
+  totalOrders: number;
+}
 const AdminUsers = () => {
   const [users, setUsers] = useState<Users[]>([]);
   const [orders, setOrders] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [UserId, setUserId] = useState<UserOrder[]>([]);
 
-  console.log(selectedUserId);
+  console.log(UserId);
 
   useEffect(() => {
+      
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
           "http://localhost:3000/users/all-user",
         );
         setUsers(response.data.users);
-        console.log(response.data.users);
+        // console.log(response.data.users);
       } catch (error) {
         console.error(error);
       }
@@ -43,17 +47,18 @@ const AdminUsers = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/users/user-orders/${selectedUserId}`,
+          `http://localhost:3000/users/user-orders/`,
         );
+        setUserId(res.data.orders);
 
-        console.log(res.data);
+        console.log(res.data.orders);
       } catch (err) {
         console.error(err);
       }
     };
 
     fetchOrders();
-  }, [selectedUserId]);
+  }, []);
   return (
     <>
       <main>
@@ -89,13 +94,14 @@ const AdminUsers = () => {
             </div>
 
             {/*  */}
-            <div className="p-4 w-full max-w-6xl mx-auto">
+            <div className=" w-full  mx-auto">
               <div className="w-full border border-stone-300/70 rounded-xl bg-[#faf6f0] dark:bg-zinc-900 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-left">
                     <thead>
                       <tr className="border-b border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 font-bold text-xs tracking-wider uppercase">
                         <th className="px-6 py-4 w-[16%]">Name</th>
+                        <th className="px-6 py-4 w-[16%]">Role</th>
                         <th className="px-6 py-4 w-[25%]">Email</th>
                         <th className="px-6 py-4 w-[16%]">Joined</th>
                         <th className="px-6 py-4 w-[8%] text-center">Orders</th>
@@ -114,48 +120,62 @@ const AdminUsers = () => {
                             colSpan={7}
                             className="p-8 text-center text-gray-500 font-medium bg-stone-50/30"
                           >
-                            No products found.
+                            No Users found.
                           </td>
                         </tr>
                       ) : (
-                        users.map((user: any) => (
-                          <tr
-                            key={user.id}
-                            onClick={() => setSelectedUserId(selectedUserId === user.id ? null : user.id)}
-                            className="hover:bg-[#fcf6f6] dark:hover:bg-gray-600/20 cursor-pointer text-sm text-stone-800 dark:text-stone-200 transition"
-                          >
-                            <td className="px-6 py-4 font-bold text-black dark:text-white truncate">
-                              {user.fullName}
-                            </td>
+                        users.map((user: any) => {
+                            // console.log(user.createdAt);
+                          return (
+                            <>
+                              <tr
+                                key={user.id}
+                               
+                                className="hover:bg-[#fcf6f6] dark:hover:bg-gray-600/20 cursor-pointer text-sm text-stone-800 dark:text-stone-200 transition"
+                              >
+                                <td className="px-6 font-bold text-black dark:text-white truncate">
+                                  {user.fullName}
+                                </td>
+                                <td className="px-6 font-bold text-black dark:text-white truncate">
+                                  {user.role}
+                                </td>
 
-                            <td className="px-6 py-4 text-stone-600 dark:text-stone-400 truncate">
-                              {user.email}
-                            </td>
+                                <td className="px-6  text-stone-600 dark:text-stone-400 truncate">
+                                  {user.email}
+                                </td>
 
-                            <td className="px-6 py-4 text-stone-600 dark:text-stone-400">
-                              {new Date(user.created_at).toLocaleDateString("en-CA")}
-                            </td>
+                                <td className="px-6  text-stone-600 dark:text-stone-400">
+                                  {new Date(user.createdAt).toLocaleDateString("en-US")}
+                                </td>
 
-                            <td className="px-6 py-4 text-stone-600 dark:text-stone-400">
-                              <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
-                                 {orders.filter((o: any) => o.userId === user.id).length} 
-                              </td>
-                            </td>
-                            <td className="px-6 py-4 text-right font-medium">
-                              {user.spent || "NPR 0"}
-                            </td>
+                                <td className="px-6  text-stone-600 dark:text-stone-400">
+                                  <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
+                                    {
+                                        UserId.map((user)=>(
+                                            <div>
+                                                {user.totalOrders.id}
+                                            </div>
+                                        ))
+                                    }
+                                  </td>
+                                </td>
+                                <td className="px-6  text-right font-medium">
+                                  {user.spent || "NPR 0"}
+                                </td>
 
-                            <td className="px-6 py-4 text-center">
-                              <span className="text-emerald-600 text-xs font-medium">
-                                {user.status || "Active"}
-                              </span>
-                            </td>
+                                <td className="px-6  text-center">
+                                  <span className="text-emerald-600 text-xs font-medium">
+                                    {user.status }
+                                  </span>
+                                </td>
 
-                            <td className="px-6 py-4 text-right text-stone-400">
-                              ➔
-                            </td>
-                          </tr>
-                        ))
+                                <td className="px-6  text-right text-stone-400">
+                                  ➔
+                                </td>
+                              </tr>
+                            </>
+                          );
+                        })
                       )}
                     </tbody>
                   </table>
