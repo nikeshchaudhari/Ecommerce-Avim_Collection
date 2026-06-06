@@ -277,9 +277,8 @@ useEffect(() => {
                           Joined
                         </span>
                         <p className="font-medium">
-                          {new Date(
-                            selectedUser?.createdAt,
-                          ).toLocaleDateString()}
+                          {selectedUser ? new Date((selectedUser as any)
+                            .createdAt).toLocaleDateString() : ""}
                         </p>
                       </div>
 
