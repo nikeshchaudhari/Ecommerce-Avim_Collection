@@ -14,7 +14,7 @@ interface User {
   fullName: string;
   id: number | string;
   email: string;
-  createdAt: string; 
+  createdAt: string;
   phone?: string;
   status: "Active" | "Banned" | string;
   role: string;
@@ -50,8 +50,10 @@ const AdminUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/users/all-user");
-        setUsers(response.data.users);
+        const response = await axios.get(
+          "http://localhost:3000/users/all-user",
+        );
+        setUsers(response.data.users || []);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -59,15 +61,17 @@ const AdminUsers = () => {
     fetchUsers();
   }, []);
 
-  // Fetch Orders 
+  // Fetch Orders
   useEffect(() => {
     const fetchOrdersAndSpending = async () => {
       try {
         const res = await axios.get(`http://localhost:3000/users/user-orders/`);
-        const resAmount = await axios.get(`http://localhost:3000/order/spend-amount`);
-        
-        setOrders(res.data.orders);
-        setAmounts(resAmount.data.spendAmount);
+        const resAmount = await axios.get(
+          `http://localhost:3000/order/spend-amount`,
+        );
+
+        setOrders(res.data.orders || []);
+        setAmounts(resAmount.data.spendAmount || []);
       } catch (err) {
         console.error("Error fetching orders/spending:", err);
       }
@@ -75,19 +79,50 @@ const AdminUsers = () => {
     fetchOrdersAndSpending();
   }, []);
 
-  // Filter Search
-  const searchUsers = users.filter(
-    (user) =>
-      user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  const selectedUserAmount = amounts.find(
-    (s) => Number(s.userId) === Number(selectedUser?.id)
-  )?.totalAmount || 0;
+  const searchUsers = users.filter((user) => {
+    const name = user?.fullName ? user.fullName.toLowerCase() : "";
+    const email = user?.email ? user.email.toLowerCase() : "";
+    const search = searchTerm.toLowerCase();
 
-  const selectedUserOrders = orders.find(
-    (o) => Number(o.id) === Number(selectedUser?.id)
-  )?.totalOrders || 0;
+    return name.includes(search) || email.includes(search);
+  });
+
+  const selectedUserAmount = selectedUser
+    ? amounts.find((s) => Number(s.userId) === Number(selectedUser.id))
+        ?.totalAmount || 0
+    : 0;
+
+  const selectedUserOrders = selectedUser
+    ? orders.find((o) => Number(o.id) === Number(selectedUser.id))
+        ?.totalOrders || 0
+    : 0;
+
+  const handleStatus = async (id: number | string, currentStatus: string) => {
+    const token = localStorage.getItem("token");
+    try {
+      const newStatus = currentStatus === "Active" ? "Banned" : "Active";
+
+      await axios.put(
+        `http://localhost:3000/users/status/${id}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.id === id ? { ...user, status: newStatus } : user,
+        ),
+      );
+
+      setSelectedUser((prev) => (prev ? { ...prev, status: newStatus } : null));
+    } catch (err) {
+      console.error("Error updating status:", err);
+    }
+  };
 
   return (
     <>
@@ -99,7 +134,7 @@ const AdminUsers = () => {
           <aside className="hidden lg:block">
             <AdminSideBar />
           </aside>
-          
+
           <section className="flex-1 px-5 lg:px-10 pt-5">
             <div className="flex justify-between items-center flex-wrap">
               <div className="mb-5">
@@ -138,7 +173,9 @@ const AdminUsers = () => {
                         <th className="px-6 py-4 w-[16%]">Joined</th>
                         <th className="px-6 py-4 w-[8%] text-center">Orders</th>
                         <th className="px-6 py-4 w-[16%] text-right">Spent</th>
-                        <th className="px-6 py-4 w-[11%] text-center">Status</th>
+                        <th className="px-6 py-4 w-[11%] text-center">
+                          Status
+                        </th>
                         <th className="px-6 py-4 w-[8%]"></th>
                       </tr>
                     </thead>
@@ -156,10 +193,10 @@ const AdminUsers = () => {
                       ) : (
                         searchUsers.map((user) => {
                           const userAmount = amounts.find(
-                            (s) => Number(s.userId) === Number(user.id)
+                            (s) => Number(s.userId) === Number(user.id),
                           );
                           const userOrder = orders.find(
-                            (o) => Number(o.id) === Number(user.id)
+                            (o) => Number(o.id) === Number(user.id),
                           );
 
                           return (
@@ -172,16 +209,20 @@ const AdminUsers = () => {
                               className="hover:bg-[#fcf6f6] dark:hover:bg-gray-600/20 cursor-pointer text-sm text-stone-800 dark:text-stone-200 transition"
                             >
                               <td className="px-6 font-bold text-black dark:text-white truncate">
-                                {user.fullName}
+                                {user.fullName || "N/A"}
                               </td>
                               <td className="px-6 text-black dark:text-white truncate">
-                                {user.role}
+                                {user.role || "N/A"}
                               </td>
                               <td className="px-6 text-stone-600 dark:text-stone-400 truncate">
-                                {user.email}
+                                {user.email || "N/A"}
                               </td>
                               <td className="px-6 text-stone-600 dark:text-stone-400">
-                                {user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US") : "N/A"}
+                                {user.createdAt
+                                  ? new Date(user.createdAt).toLocaleDateString(
+                                      "en-US",
+                                    )
+                                  : "N/A"}
                               </td>
                               <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
                                 {userOrder?.totalOrders || 0}
@@ -198,11 +239,17 @@ const AdminUsers = () => {
                                       : "text-red-800 dark:text-red-400 dark:bg-red-500/10 bg-red-500/20 px-2 py-1 rounded-full font-inter text-xs"
                                   }
                                 >
-                                  {user.status}
+                                  {user.status || "Inactive"}
                                 </span>
                               </td>
-                              <td className="px-6 text-right text-stone-400" >
-                                <IoIosArrowForward   />
+                              <td className="px-6 text-right text-stone-400">
+                                <IoIosArrowForward
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevents row double action
+                                    setSelectedUser(user);
+                                    setOpen(true);
+                                  }}
+                                />
                               </td>
                             </tr>
                           );
@@ -239,14 +286,18 @@ const AdminUsers = () => {
                         <span className="text-[10px] tracking-[1px] text-stone-400 dark:text-stone-500 uppercase block font-bold mb-1">
                           Email
                         </span>
-                        <p className="font-medium truncate">{selectedUser.email}</p>
+                        <p className="font-medium truncate">
+                          {selectedUser.email || "N/A"}
+                        </p>
                       </div>
 
                       <div className="border border-stone-300/60 dark:border-stone-800 bg-white/60 dark:bg-zinc-950 p-4 rounded shadow-sm">
                         <span className="text-[10px] tracking-[1px] text-stone-400 dark:text-stone-500 uppercase block font-bold mb-1">
                           Phone
                         </span>
-                        <p className="font-medium">{selectedUser.phone || "N/A"}</p>
+                        <p className="font-medium">
+                          {selectedUser.phone || "N/A"}
+                        </p>
                       </div>
 
                       <div className="border border-stone-300/60 dark:border-stone-800 bg-white/60 dark:bg-zinc-950 p-4 rounded shadow-sm">
@@ -254,7 +305,11 @@ const AdminUsers = () => {
                           Joined
                         </span>
                         <p className="font-medium">
-                          {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString() : "N/A"}
+                          {selectedUser.createdAt
+                            ? new Date(
+                                selectedUser.createdAt,
+                              ).toLocaleDateString()
+                            : "N/A"}
                         </p>
                       </div>
 
@@ -278,7 +333,9 @@ const AdminUsers = () => {
                         <span className="text-[10px] tracking-[1px] text-stone-400 dark:text-stone-500 uppercase block font-bold mb-1">
                           Status
                         </span>
-                        <p className={`font-semibold ${selectedUser.status === "Active" ? "text-emerald-700 dark:text-emerald-500" : "text-red-600 dark:text-red-400"}`}>
+                        <p
+                          className={`font-semibold ${selectedUser.status === "Active" ? "text-emerald-700 dark:text-emerald-500" : "text-red-600 dark:text-red-400"}`}
+                        >
                           {selectedUser.status}
                         </p>
                       </div>
@@ -299,8 +356,11 @@ const AdminUsers = () => {
 
                         <div className="flex justify-between items-start px-4 py-3 border-b border-stone-200 dark:border-stone-800">
                           <p className="text-sm font-medium text-stone-800 dark:text-stone-300">
-                            Festival Crown Embroidered Topi{" "}
-                            <span className="text-stone-400 dark:text-stone-500 mx-1">×</span> 10
+                            Festival Crown Embro Embroidered Topi{" "}
+                            <span className="text-stone-400 dark:text-stone-500 mx-1">
+                              ×
+                            </span>{" "}
+                            10
                           </p>
                           <span className="text-sm font-medium text-stone-700 dark:text-stone-400">
                             NPR 32,000
@@ -326,8 +386,21 @@ const AdminUsers = () => {
                         <IoCloseOutline className="text-lg" /> Close
                       </button>
 
-                      <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#be2e2e] hover:bg-red-700 rounded shadow-sm transition">
-                        <IoShieldOutline className="text-base" /> Ban user
+                      {/* FIXED: Passed selectedUser dynamic payload & conditional theme branding styling toggle */}
+                      <button
+                        onClick={() =>
+                          handleStatus(selectedUser.id, selectedUser.status)
+                        }
+                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded shadow-sm transition ${
+                          selectedUser.status === "Active"
+                            ? "bg-[#be2e2e] hover:bg-red-700"
+                            : "bg-emerald-600 hover:bg-emerald-700"
+                        }`}
+                      >
+                        <IoShieldOutline className="text-base" />
+                        {selectedUser.status === "Active"
+                          ? "Ban user"
+                          : "Unban user"}
                       </button>
                     </div>
                   </div>
