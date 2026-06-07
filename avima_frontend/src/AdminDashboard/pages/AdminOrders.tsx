@@ -29,6 +29,9 @@ const AdminOrders = () => {
   const [whatsappOpen, setWhatsappOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("all_status");
   const [search, setSearch] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -65,16 +68,16 @@ const AdminOrders = () => {
   };
   // search and filter
 
-  const searchData = orders.filter(
-    (order) =>{
-      const matchSearch = order.customerName.toLowerCase().includes(search.toLowerCase()) ||
+  const searchData = orders.filter((order) => {
+    const matchSearch =
+      order.customerName.toLowerCase().includes(search.toLowerCase()) ||
       order.customerPhone.toString().includes(search) ||
       order.id.toString().includes(search);
 
-      const matchStatus = selectedStatus === "all_status" || order.status === selectedStatus;
-      return matchSearch && matchStatus;
-    }
-  );
+    const matchStatus =
+      selectedStatus === "all_status" || order.status === selectedStatus;
+    return matchSearch && matchStatus;
+  });
   return (
     <>
       <nav className="">
