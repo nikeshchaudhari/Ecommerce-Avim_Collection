@@ -1,23 +1,21 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   IoCloseOutline,
   IoSearchOutline,
   IoShieldOutline,
 } from "react-icons/io5";
+import { RxCross2 } from "react-icons/rx";
 import AdminSideBar from "../component/AdminSideBar";
 import Navbar from "../component/Navbar";
-import { FiChevronRight } from "react-icons/fi";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router";
-import { RxCross2 } from "react-icons/rx";
+import { IoIosArrowForward } from "react-icons/io";
 
-interface Users {
+interface User {
   fullName: string;
   id: number | string;
   email: string;
-  joined: string;
-  orders: number;
-  spent: string;
+  createdAt: string; 
+  phone?: string;
   status: "Active" | "Banned" | string;
   role: string;
 }
@@ -28,73 +26,68 @@ interface Order {
   totalOrders: number;
 }
 
-const AdminUsers = () => {
-  const [users, setUsers] = useState<Users[]>([]);
+interface SpendAmount {
+  userId: string | number;
+  totalAmount: number | string;
+}
 
+const AdminUsers = () => {
+  const [users, setUsers] = useState<User[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [Amount, setAmount] = useState<any[]>([]);
+  const [amounts, setAmounts] = useState<SpendAmount[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<Users | null>(null);
-    //   console.log(selectedUser.fullName);
-//   console.log(selectedUser.role);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-
-useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "auto";
     return () => {
       document.body.style.overflow = "auto";
     };
   }, [open]);
+
+  // Fetch Users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/users/all-user",
-        );
+        const response = await axios.get("http://localhost:3000/users/all-user");
         setUsers(response.data.users);
-        // console.log(response.data.users);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching users:", error);
       }
     };
-
     fetchUsers();
   }, []);
 
-  // user-orders
+  // Fetch Orders 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchOrdersAndSpending = async () => {
       try {
         const res = await axios.get(`http://localhost:3000/users/user-orders/`);
-        const resAmount = await axios.get(
-          `http://localhost:3000/order/spend-amount`,
-        );
+        const resAmount = await axios.get(`http://localhost:3000/order/spend-amount`);
+        
         setOrders(res.data.orders);
-        setAmount(resAmount.data.spendAmount);
-
-        resAmount.data.spendAmount.map((item: any) =>
-          console.log(item.totalAmount),
-        );
+        setAmounts(resAmount.data.spendAmount);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching orders/spending:", err);
       }
     };
-
-    fetchOrders();
+    fetchOrdersAndSpending();
   }, []);
 
-  //   search
+  // Filter Search
   const searchUsers = users.filter(
     (user) =>
       user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const selectedUserAmount = amounts.find(
+    (s) => Number(s.userId) === Number(selectedUser?.id)
+  )?.totalAmount || 0;
+
+  const selectedUserOrders = orders.find(
+    (o) => Number(o.id) === Number(selectedUser?.id)
+  )?.totalOrders || 0;
 
   return (
     <>
@@ -106,6 +99,7 @@ useEffect(() => {
           <aside className="hidden lg:block">
             <AdminSideBar />
           </aside>
+          
           <section className="flex-1 px-5 lg:px-10 pt-5">
             <div className="flex justify-between items-center flex-wrap">
               <div className="mb-5">
@@ -115,7 +109,9 @@ useEffect(() => {
                 <h2 className="text-[25px] md:text-[30px] font-cormorant">
                   Users
                 </h2>
-                <p className="font-inter text-black/60">member(s)</p>
+                <p className="font-inter text-black/60">
+                  {searchUsers.length} member(s) found
+                </p>
               </div>
 
               <div className="relative">
@@ -130,8 +126,7 @@ useEffect(() => {
               </div>
             </div>
 
-            {/*  */}
-            <div className=" w-full  mx-auto">
+            <div className="w-full mx-auto">
               <div className="w-full border border-stone-300/70 rounded-xl bg-[#faf6f0] dark:bg-zinc-900 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-left">
@@ -143,87 +138,73 @@ useEffect(() => {
                         <th className="px-6 py-4 w-[16%]">Joined</th>
                         <th className="px-6 py-4 w-[8%] text-center">Orders</th>
                         <th className="px-6 py-4 w-[16%] text-right">Spent</th>
-                        <th className="px-6 py-4 w-[11%] text-center">
-                          Status
-                        </th>
+                        <th className="px-6 py-4 w-[11%] text-center">Status</th>
                         <th className="px-6 py-4 w-[8%]"></th>
                       </tr>
                     </thead>
 
-                    <tbody className=" divide-stone-200/80 dark:divide-stone-800">
+                    <tbody className="divide-y divide-stone-200/80 dark:divide-stone-800">
                       {searchUsers.length === 0 ? (
                         <tr>
                           <td
-                            colSpan={7}
+                            colSpan={8}
                             className="p-8 text-center text-gray-500 font-medium bg-stone-50/30"
                           >
-                            No Users found.
+                            No Users found
                           </td>
                         </tr>
                       ) : (
-                        searchUsers.map((user: any) => {
-                          // user_Amount Spend
-                          const userAmount = Amount.find(
-                            (s: any) => Number(s.userId) === Number(user.id),
+                        searchUsers.map((user) => {
+                          const userAmount = amounts.find(
+                            (s) => Number(s.userId) === Number(user.id)
+                          );
+                          const userOrder = orders.find(
+                            (o) => Number(o.id) === Number(user.id)
                           );
 
                           return (
-                            <>
-                              <tr
-                                key={user.id}
-                                className="hover:bg-[#fcf6f6] dark:hover:bg-gray-600/20 cursor-pointer text-sm text-stone-800 dark:text-stone-200 transition"
-                              >
-                                <td className="px-6 font-bold text-black dark:text-white truncate">
-                                  {user.fullName}
-                                </td>
-                                <td className="px-6  text-black dark:text-white truncate">
-                                  {user.role}
-                                </td>
-
-                                <td className="px-6  text-stone-600 dark:text-stone-400 truncate">
-                                  {user.email}
-                                </td>
-
-                                <td className="px-6  text-stone-600 dark:text-stone-400">
-                                  {new Date(user.createdAt).toLocaleDateString(
-                                    "en-US",
-                                  )}
-                                </td>
-
-                                <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
-                                  {orders.find(
-                                    (o: any) =>
-                                      Number(o.id) === Number(user.id),
-                                  )?.totalOrders || 0}
-                                </td>
-                                <td className="px-6 py-4 text-right text-stone-600 dark:text-stone-400 ">
-                                  <span className="font-bold">$ </span>
-                                  {userAmount?.totalAmount || 0}
-                                </td>
-
-                                <td
-                                  className="px-6  text-center"
-                                  onClick={() => {
-                                    setSelectedUser(user);
-                                    setOpen(true);
-                                  }}
+                            <tr
+                              key={user.id}
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setOpen(true);
+                              }}
+                              className="hover:bg-[#fcf6f6] dark:hover:bg-gray-600/20 cursor-pointer text-sm text-stone-800 dark:text-stone-200 transition"
+                            >
+                              <td className="px-6 font-bold text-black dark:text-white truncate">
+                                {user.fullName}
+                              </td>
+                              <td className="px-6 text-black dark:text-white truncate">
+                                {user.role}
+                              </td>
+                              <td className="px-6 text-stone-600 dark:text-stone-400 truncate">
+                                {user.email}
+                              </td>
+                              <td className="px-6 text-stone-600 dark:text-stone-400">
+                                {user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US") : "N/A"}
+                              </td>
+                              <td className="px-6 py-4 text-center text-stone-600 dark:text-stone-400">
+                                {userOrder?.totalOrders || 0}
+                              </td>
+                              <td className="px-6 py-4 text-right text-stone-600 dark:text-stone-400">
+                                <span className="font-bold">$ </span>
+                                {userAmount?.totalAmount || 0}
+                              </td>
+                              <td className="px-6 text-center">
+                                <span
+                                  className={
+                                    user.status === "Active"
+                                      ? "text-green-600 font-inter font-semibold"
+                                      : "text-red-800 dark:text-red-400 dark:bg-red-500/10 bg-red-500/20 px-2 py-1 rounded-full font-inter text-xs"
+                                  }
                                 >
-                                  <span
-                                    className={
-                                      user.status === "Active"
-                                        ? "text-green-600 font-inter"
-                                        : "text-red-800 dark:text-red-400 dark:bg-red-500/10 bg-red-500/20 px-2 py-1 rounded-full font-inter"
-                                    }
-                                  >
-                                    {user.status}
-                                  </span>
-                                </td>
-
-                                <td className="px-6  text-right text-stone-400">
-                                  ➔
-                                </td>
-                              </tr>
-                            </>
+                                  {user.status}
+                                </span>
+                              </td>
+                              <td className="px-6 text-right text-stone-400" >
+                                <IoIosArrowForward   />
+                              </td>
+                            </tr>
                           );
                         })
                       )}
@@ -231,45 +212,41 @@ useEffect(() => {
                   </table>
                 </div>
               </div>
-              {/* box */}
-              {open && (
+
+              {/* Modal Box */}
+              {open && selectedUser && (
                 <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
                   <div className="bg-white dark:bg-black dark:border w-full mx-3 p-3 lg:w-1/2 lg:p-5 rounded shadow-lg relative max-h-[90vh] overflow-y-auto transition duration-700">
                     <button
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                      className="absolute top-2 right-2 text-black dark:text-white"
+                      onClick={() => setOpen(false)}
+                      className="absolute top-2 right-2 text-black dark:text-white hover:opacity-70 transition"
                     >
                       <RxCross2 size={25} />
                     </button>
 
                     <div className="mb-6">
                       <span className="text-[11px] tracking-[3px] text-amber-600 dark:text-amber-500 font-semibold uppercase block mb-1">
-                        Member Detail
+                        Member Detail ({selectedUser.role})
                       </span>
                       <h2 className="text-3xl font-serif text-stone-900 dark:text-white capitalize">
-                        {selectedUser.role}
+                        {selectedUser.fullName}
                       </h2>
                     </div>
 
-                    {/* grid blocks 6 */}
+                    {/* Grid blocks */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                      {/* Card 1: Email */}
                       <div className="border border-stone-300/60 dark:border-stone-800 bg-white/60 dark:bg-zinc-950 p-4 rounded shadow-sm">
                         <span className="text-[10px] tracking-[1px] text-stone-400 dark:text-stone-500 uppercase block font-bold mb-1">
                           Email
                         </span>
-                        <p className="font-medium truncate">
-                          {selectedUser?.email}
-                        </p>
+                        <p className="font-medium truncate">{selectedUser.email}</p>
                       </div>
 
                       <div className="border border-stone-300/60 dark:border-stone-800 bg-white/60 dark:bg-zinc-950 p-4 rounded shadow-sm">
                         <span className="text-[10px] tracking-[1px] text-stone-400 dark:text-stone-500 uppercase block font-bold mb-1">
                           Phone
                         </span>
-                        <p className="font-medium">{selectedUser?.phone}</p>
+                        <p className="font-medium">{selectedUser.phone || "N/A"}</p>
                       </div>
 
                       <div className="border border-stone-300/60 dark:border-stone-800 bg-white/60 dark:bg-zinc-950 p-4 rounded shadow-sm">
@@ -277,8 +254,7 @@ useEffect(() => {
                           Joined
                         </span>
                         <p className="font-medium">
-                          {selectedUser ? new Date((selectedUser as any)
-                            .createdAt).toLocaleDateString() : ""}
+                          {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString() : "N/A"}
                         </p>
                       </div>
 
@@ -286,9 +262,7 @@ useEffect(() => {
                         <span className="text-[10px] tracking-[1px] text-stone-400 dark:text-stone-500 uppercase block font-bold mb-1">
                           Orders
                         </span>
-                        <p className="font-medium">
-                        10
-                        </p>
+                        <p className="font-medium">{selectedUserOrders}</p>
                       </div>
 
                       <div className="border border-stone-300/60 dark:border-stone-800 bg-white/60 dark:bg-zinc-950 p-4 rounded shadow-sm">
@@ -296,7 +270,7 @@ useEffect(() => {
                           Total Spent
                         </span>
                         <p className="font-semibold text-stone-900 dark:text-stone-100">
-                          {Amount?.totalAmount || "NPR 0"}
+                          $ {selectedUserAmount}
                         </p>
                       </div>
 
@@ -304,20 +278,18 @@ useEffect(() => {
                         <span className="text-[10px] tracking-[1px] text-stone-400 dark:text-stone-500 uppercase block font-bold mb-1">
                           Status
                         </span>
-                        <p className="font-semibold text-emerald-700 dark:text-emerald-500">
-                          Active
+                        <p className={`font-semibold ${selectedUser.status === "Active" ? "text-emerald-700 dark:text-emerald-500" : "text-red-600 dark:text-red-400"}`}>
+                          {selectedUser.status}
                         </p>
                       </div>
                     </div>
 
-                    {/* purchase details */}
                     <div className="mb-8">
                       <h3 className="text-xs tracking-[2px] text-stone-500 dark:text-stone-400 font-bold uppercase mb-4">
-                        Purchases
+                        Recent Purchases
                       </h3>
 
                       <div className="border border-stone-300/70 dark:border-stone-800 bg-stone-50/40 dark:bg-zinc-950/40 rounded overflow-hidden">
-                        {/* Top row: Date & Status */}
                         <div className="flex justify-between items-center px-4 pt-3 pb-1 text-xs text-stone-400 dark:text-stone-500">
                           <span>5/21/2026, 5:22:32 PM</span>
                           <span className="font-semibold tracking-wider text-stone-500 dark:text-stone-400 uppercase">
@@ -328,10 +300,7 @@ useEffect(() => {
                         <div className="flex justify-between items-start px-4 py-3 border-b border-stone-200 dark:border-stone-800">
                           <p className="text-sm font-medium text-stone-800 dark:text-stone-300">
                             Festival Crown Embroidered Topi{" "}
-                            <span className="text-stone-400 dark:text-stone-500 mx-1">
-                              ×
-                            </span>{" "}
-                            10
+                            <span className="text-stone-400 dark:text-stone-500 mx-1">×</span> 10
                           </p>
                           <span className="text-sm font-medium text-stone-700 dark:text-stone-400">
                             NPR 32,000
@@ -348,7 +317,7 @@ useEffect(() => {
                         </div>
                       </div>
                     </div>
-                    {/* footer Actions */}
+
                     <div className="flex justify-end items-center gap-3 pt-4 border-t border-stone-200 dark:border-stone-800">
                       <button
                         onClick={() => setOpen(false)}

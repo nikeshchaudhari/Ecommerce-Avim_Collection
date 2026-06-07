@@ -19,7 +19,6 @@ const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   
-  // English Comment: Added refresh trigger to sync parent count and child component table data
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -137,8 +136,6 @@ const AdminProducts = () => {
 
     const preview = files.map((file) => URL.createObjectURL(file));
     setPhotos((prev) => [...prev, ...preview]);
-
-    // English Comment: Resetting input value to allow uploading the same deleted file again
     e.target.value = "";
 
     setTimeout(() => {
@@ -174,11 +171,12 @@ const AdminProducts = () => {
   }, [refreshKey]); 
   return (
     <>
-      <nav>
-        <Navbar />
-      </nav>
+     
 
       <main>
+        <div className="sticky top-0 z-50">
+          <Navbar />
+        </div>
         <div className="bg-[#f9efe7] dark:bg-black min-h-screen lg:flex">
           <aside className="hidden lg:block">
             <AdminSideBar />

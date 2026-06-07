@@ -63,7 +63,7 @@ const AdminProductView = ({ search }: AdminProductViewProps) => {
     if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {
-      pages.push(1); // पहिलो पेज जहिले देखाउने
+      pages.push(1); 
       
       if (currentPage > 3) {
         pages.push("...");
@@ -210,7 +210,7 @@ const AdminProductView = ({ search }: AdminProductViewProps) => {
           <div className="flex justify-end p-4">
             <div className="inline-flex gap-1.5 items-center bg-transparent">
               
-              {/* Previous Button `<` */}
+              {/* Previous Button */}
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
