@@ -18,7 +18,6 @@ const AdminProducts = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -39,7 +38,6 @@ const AdminProducts = () => {
     fileRef.current?.click();
   };
 
-  // formik
   const {
     errors,
     values,
@@ -49,6 +47,7 @@ const AdminProducts = () => {
     setFieldValue,
     touched,
     resetForm,
+    isSubmitting,
   } = useFormik({
     initialValues: {
       name: "",
@@ -89,8 +88,8 @@ const AdminProducts = () => {
         formData.append("discount_amount", String(values.discount_amount));
         formData.append("discount_starts_at", values.discount_starts_at);
         formData.append("discount_ends_at", values.discount_ends_at);
-        formData.append("featured", String(values.featured));
-        formData.append("active", String(values.active));
+        formData.append("featured", String(values.featured ? 1 : 0));
+        formData.append("active", String(values.active ? 1 : 0));
         formData.append("colors", values.colors);
         formData.append("sizes", values.sizes);
         formData.append("description", values.description);
@@ -109,12 +108,11 @@ const AdminProducts = () => {
             },
           },
         );
-        
+
         resetForm();
         setOpen(false);
         setPhotos([]);
         toast.success("Product created successfully!");
-        
         setRefreshKey((prev) => prev + 1);
         console.log(res.data);
       } catch (err) {
@@ -153,13 +151,15 @@ const AdminProducts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resProduct = await axios.get("http://localhost:3000/product/all-products");
+        const resProduct = await axios.get(
+          "http://localhost:3000/product/all-products",
+        );
         const allProducts = resProduct.data.products;
 
         const uniqueData = Array.from(
           new Set(allProducts.map((items: any) => items.category)),
         ).filter(Boolean);
-        
+
         setProducts(allProducts);
         setCategories(uniqueData as string[]);
       } catch (err) {
@@ -168,11 +168,10 @@ const AdminProducts = () => {
     };
 
     fetchData();
-  }, [refreshKey]); 
+  }, [refreshKey]);
+
   return (
     <>
-     
-
       <main>
         <div className="sticky top-0 z-50">
           <Navbar />
@@ -181,9 +180,9 @@ const AdminProducts = () => {
           <aside className="hidden lg:block">
             <AdminSideBar />
           </aside>
-          
+
           <section className="flex-1 px-5 lg:px-10 pt-5">
-            <div className="flex justify-between items-center flex-wrap gap-4">
+            <div className="flex justify-between items-center gap-4">
               <div className="mb-5">
                 <span className="text-[12px] tracking-[4px] text-yellow-500 font-semibold">
                   Catalog
@@ -207,7 +206,7 @@ const AdminProducts = () => {
                   />
                   <IoSearchOutline className="absolute left-3 text-gray-400" />
                 </div>
-                
+
                 <button
                   type="button"
                   onClick={() => setOpen(!open)}
@@ -218,84 +217,104 @@ const AdminProducts = () => {
               </div>
             </div>
 
+            <AdminProductView search={searchTerm} />
+
             {open && (
-              <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 animate-fade-in">
-                <div className="bg-white dark:bg-black dark:border border-zinc-800 w-full mx-3 p-4 lg:w-1/2 lg:p-6 rounded-xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
-                  
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-3 animate-fade-in">
+                <div className="bg-white dark:bg-zinc-950 dark:border border-zinc-900 w-full max-w-3xl p-5 lg:p-7 rounded-2xl shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar">
                   <button
                     type="button"
+                    disabled={isSubmitting}
                     onClick={() => {
                       setOpen(false);
                       resetForm();
                       setPhotos([]);
                     }}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-black dark:hover:text-white transition"
+                    className="absolute top-5 right-5 text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 transition disabled:opacity-50"
                   >
                     <RxCross2 size={22} />
                   </button>
-                  
-                  <div className="flex items-center gap-1 text-yellow-500 mb-1">
-                    <WiStars size={20} />
-                    <span className="tracking-[4px] text-[11px] font-inter font-bold">
-                      CATALOG
+
+                  <div className="flex items-center gap-1.5 text-amber-500 mb-1">
+                    <WiStars size={22} className="animate-pulse" />
+                    <span className="tracking-[4px] text-[11px] font-inter font-bold uppercase">
+                      Catalog 
                     </span>
                   </div>
 
-                  <h2 className="text-[26px] font-cormorant mb-4 font-light dark:text-white">
-                    New product
+                  <h2 className="text-2xl md:text-3xl font-cormorant font-medium mb-5 text-zinc-900 dark:text-zinc-50">
+                    New Product
                   </h2>
 
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <h2 className="font-inter text-sm font-semibold mb-1 dark:text-gray-300">Product images</h2>
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="space-y-2">
+                      <h3 className="font-inter text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                        Product Images
+                      </h3>
                       <div
-                        className="relative w-full h-44 border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl flex flex-col items-center justify-center cursor-pointer bg-gray-50 dark:bg-zinc-950 hover:bg-gray-100 dark:hover:bg-zinc-900 transition"
-                        onClick={handleClick}
+                        className={`relative w-full h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition ${
+                          loading
+                            ? "border-zinc-300 bg-zinc-100 dark:bg-zinc-900 cursor-not-allowed"
+                            : "border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 hover:bg-zinc-100/70 dark:hover:bg-zinc-900/70"
+                        }`}
+                        onClick={!loading ? handleClick : undefined}
                       >
-                        <div className="bg-red-50 dark:bg-red-950/30 p-2 rounded-full mb-1">
-                          <SlCloudUpload size={28} className="text-red-500" />
+                        <div className="bg-red-50 dark:bg-red-950/20 p-2.5 rounded-full mb-2">
+                          <SlCloudUpload
+                            size={26}
+                            className="text-red-600 dark:text-red-500"
+                          />
                         </div>
-                        <p className="text-sm font-medium">Drag & drop or click to browse</p>
-                        <p className="text-xs text-gray-400">JPEG, JPG, PNG only (Max 5)</p>
+                        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                          Drag & drop or click to browse
+                        </p>
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          JPEG, JPG, PNG only (Max 5)
+                        </p>
 
                         <input
                           type="file"
                           ref={fileRef}
                           multiple
-                          accept="image/*"
+                          accept="image/png, image/jpeg, image/jpg"
                           className="hidden"
                           onChange={handleLoading}
+                          disabled={loading}
                         />
 
                         {loading && (
-                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-xl">
-                            <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                          <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center rounded-xl">
+                            <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                           </div>
                         )}
                       </div>
-                      
+
                       {touched.photos && errors.photos && (
-                        <p className="text-xs text-red-500 mt-1 font-medium">
-                          {String(errors.photos)}
+                        <p className="text-xs text-red-500 font-medium pl-1">
+                          {String(errors.photos)} *
                         </p>
                       )}
                     </div>
 
                     {photos.length > 0 && (
-                      <div className="grid grid-cols-5 gap-2">
+                      <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 p-2 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-100 dark:border-zinc-900">
                         {photos.map((img, i) => (
-                          <div key={i} className="relative group aspect-square">
+                          <div
+                            key={i}
+                            className="relative group aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm"
+                          >
                             <img
                               src={img}
                               alt="preview"
-                              className="w-full h-full object-cover rounded-lg border border-gray-200 dark:border-zinc-800"
+                              className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition rounded-lg flex items-center justify-center" />
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center" />
                             <button
                               type="button"
-                              className="absolute top-1 right-1 bg-black/70 text-white p-1 rounded-full hover:bg-red-600 transition"
+                              disabled={isSubmitting}
+                              className="absolute top-1 right-1 bg-black/70 text-white p-1 rounded-full hover:bg-red-600 transition shadow-md disabled:opacity-50"
                               onClick={(e) => {
-                                e.stopPropagation(); // Stops dragzone trigger
+                                e.stopPropagation();
                                 handleDelete(i);
                               }}
                             >
@@ -307,125 +326,182 @@ const AdminProducts = () => {
                     )}
 
                     <div className="grid md:grid-cols-2 gap-4">
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="name">Name</label>
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="name"
+                        >
+                          Product Name
+                        </label>
                         <input
                           type="text"
                           name="name"
+                          id="name"
                           value={values.name}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          placeholder="Enter product name.."
-                          className="w-full border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none focus:border-amber-500 transition"
+                          placeholder="e.g. Premium Silk Dress"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 dark:focus:border-amber-500/70 transition text-sm text-zinc-900 dark:text-zinc-100"
                         />
                         {touched.name && errors.name && (
-                          <p className="text-xs text-red-500 mt-1">{errors.name} *</p>
+                          <p className="text-xs text-red-500 font-medium">
+                            {errors.name} *
+                          </p>
                         )}
                       </div>
-                      
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="slug">Slug</label>
+
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="slug"
+                        >
+                          Product Slug
+                        </label>
                         <input
                           type="text"
                           name="slug"
+                          id="slug"
                           value={values.slug}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          placeholder="enter-product-slug"
-                          className="w-full border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none focus:border-amber-500 transition"
+                          placeholder="premium-silk-dress"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 dark:focus:border-amber-500/70 transition text-sm text-zinc-900 dark:text-zinc-100"
                         />
                         {touched.slug && errors.slug && (
-                          <p className="text-xs text-red-500 mt-1">{errors.slug} *</p>
+                          <p className="text-xs text-red-500 font-medium">
+                            {errors.slug} *
+                          </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="category">Category</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="category"
+                        >
+                          Category
+                        </label>
                         <select
                           name="category"
+                          id="category"
                           value={values.category}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-2 py-2 rounded-lg outline-none"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                         >
-                          <option value="">Select</option>
+                          <option value="">Select Category</option>
                           {categories.map((cat) => (
-                            <option key={cat} value={cat}>{cat}</option>
+                            <option key={cat} value={cat}>
+                              {cat}
+                            </option>
                           ))}
                         </select>
                         {touched.category && errors.category && (
-                          <p className="text-xs text-red-500 mt-1">{errors.category} *</p>
+                          <p className="text-xs text-red-500 font-medium">
+                            {errors.category} *
+                          </p>
                         )}
                       </div>
 
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="gender">Gender</label>
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="gender"
+                        >
+                          Gender Target
+                        </label>
                         <select
                           name="gender"
+                          id="gender"
                           value={values.gender}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-2 py-2 rounded-lg outline-none"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                         >
-                          <option value="">Select</option>
+                          <option value="">Select Gender</option>
                           <option value="male">Male</option>
                           <option value="female">Female</option>
                           <option value="unisex">Unisex</option>
                         </select>
                       </div>
 
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="stock">Stock</label>
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="stock"
+                        >
+                          Available Stock
+                        </label>
                         <input
                           type="number"
                           name="stock"
+                          id="stock"
                           min="0"
                           value={values.stock}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-2 py-2 rounded-lg outline-none"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                         />
                       </div>
                     </div>
 
-                  
                     <div className="grid md:grid-cols-2 gap-4">
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="price">Price (NPR)</label>
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="price"
+                        >
+                          Selling Price (NPR)
+                        </label>
                         <input
                           type="number"
                           name="price"
+                          id="price"
                           min="0"
                           value={values.price}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none"
+                          placeholder="0.00"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                         />
                       </div>
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="compare_price">Compare price (optional)</label>
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="compare_price"
+                        >
+                          Original / Compare Price (Optional)
+                        </label>
                         <input
                           type="number"
                           name="compare_price"
+                          id="compare_price"
                           min="0"
                           value={values.compare_price}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none"
+                          placeholder="0.00"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                         />
                       </div>
                     </div>
 
-                    <div className="flex flex-col">
-                      <label className="text-sm font-medium mb-1" htmlFor="status">Availability status</label>
+                    <div className="flex flex-col space-y-1.5">
+                      <label
+                        className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                        htmlFor="status"
+                      >
+                        Availability Status
+                      </label>
                       <select
                         name="status"
+                        id="status"
                         value={values.status}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        className="w-full border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none"
+                        className="w-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                       >
                         <option value="in_stock">In Stock</option>
                         <option value="out_of_stock">Out of Stock</option>
@@ -433,156 +509,222 @@ const AdminProducts = () => {
                       </select>
                     </div>
 
-                    <div className="border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-950/40 rounded-xl p-4 space-y-3">
-                      <h2 className="uppercase text-[11px] tracking-[3px] text-yellow-600 font-bold">
-                        Product-level discount
-                      </h2>
+                    <div className="border border-zinc-200 dark:border-zinc-900 bg-zinc-50/70 dark:bg-zinc-900/20 rounded-xl p-4 space-y-4">
+                      <h4 className="uppercase text-[11px] tracking-[2.5px] text-amber-600 dark:text-amber-500 font-bold">
+                        Product-level Discount
+                      </h4>
                       <div className="grid md:grid-cols-2 gap-4">
-                        <div className="flex flex-col">
-                          <label className="text-xs font-medium mb-1" htmlFor="discount_percent">Discount %</label>
+                        <div className="flex flex-col space-y-1.5">
+                          <label
+                            className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                            htmlFor="discount_percent"
+                          >
+                            Discount %
+                          </label>
                           <input
                             type="number"
                             name="discount_percent"
+                            id="discount_percent"
                             min="0"
                             max="100"
                             value={values.discount_percent}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-1.5 rounded-lg outline-none"
+                            className="border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                           />
                         </div>
-                        <div className="flex flex-col">
-                          <label className="text-xs font-medium mb-1" htmlFor="discount_amount">Or fixed amount (NPR)</label>
+                        <div className="flex flex-col space-y-1.5">
+                          <label
+                            className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                            htmlFor="discount_amount"
+                          >
+                            Or Fixed Amount (NPR)
+                          </label>
                           <input
                             type="number"
                             name="discount_amount"
+                            id="discount_amount"
                             min="1"
                             value={values.discount_amount}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-1.5 rounded-lg outline-none"
+                            className="border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                           />
                         </div>
                       </div>
                       <div className="grid md:grid-cols-2 gap-4">
-                        <div className="flex flex-col">
-                          <label className="text-xs font-medium mb-1" htmlFor="discount_starts_at">Starts</label>
+                        <div className="flex flex-col space-y-1.5">
+                          <label
+                            className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                            htmlFor="discount_starts_at"
+                          >
+                            Starts Promotion
+                          </label>
                           <input
                             type="datetime-local"
                             name="discount_starts_at"
+                            id="discount_starts_at"
                             value={values.discount_starts_at}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-1.5 rounded-lg outline-none"
+                            className="border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-1.5 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-600 dark:text-zinc-300"
                           />
                         </div>
-                        <div className="flex flex-col">
-                          <label className="text-xs font-medium mb-1" htmlFor="discount_ends_at">Ends</label>
+                        <div className="flex flex-col space-y-1.5">
+                          <label
+                            className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                            htmlFor="discount_ends_at"
+                          >
+                            Ends Promotion
+                          </label>
                           <input
                             type="datetime-local"
                             name="discount_ends_at"
+                            id="discount_ends_at"
                             value={values.discount_ends_at}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-1.5 rounded-lg outline-none"
+                            className="border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-1.5 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-600 dark:text-zinc-300"
                           />
                         </div>
                       </div>
                     </div>
 
-                  
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm font-medium mb-1" htmlFor="description">Description</label>
+                    <div className="space-y-4">
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="description"
+                        >
+                          Short Description
+                        </label>
                         <textarea
                           rows={3}
                           name="description"
+                          id="description"
                           value={values.description}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none w-full text-sm"
+                          placeholder="Write a brief product description..."
+                          className="border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none w-full text-sm text-zinc-900 dark:text-zinc-100 focus:border-amber-500 transition resize-none"
                         />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium mb-1" htmlFor="story">Story</label>
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="story"
+                        >
+                          Behind the Design / Story
+                        </label>
                         <textarea
                           rows={2}
                           name="story"
+                          id="story"
                           value={values.story}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none w-full text-sm"
+                          placeholder="The inspiration behind this release..."
+                          className="border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none w-full text-sm text-zinc-900 dark:text-zinc-100 focus:border-amber-500 transition resize-none"
                         />
                       </div>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="sizes">Sizes (comma separated)</label>
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="sizes"
+                        >
+                          Available Sizes (Comma separated)
+                        </label>
                         <input
                           type="text"
                           name="sizes"
+                          id="sizes"
                           placeholder="S, M, L, XL"
                           value={values.sizes}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="w-full border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                         />
                       </div>
-                      <div className="flex flex-col">
-                        <label className="text-sm font-medium mb-1" htmlFor="colors">Colors (comma separated)</label>
+                      <div className="flex flex-col space-y-1.5">
+                        <label
+                          className="text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                          htmlFor="colors"
+                        >
+                          Available Colors (Comma separated)
+                        </label>
                         <input
                           type="text"
                           name="colors"
+                          id="colors"
                           placeholder="Red, Blue, Black"
                           value={values.colors}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          className="w-full border border-gray-300 dark:border-zinc-800 dark:bg-zinc-950 px-3 py-2 rounded-lg outline-none"
+                          className="w-full border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 rounded-xl outline-none focus:border-amber-500 transition text-sm text-zinc-900 dark:text-zinc-100"
                         />
                       </div>
                     </div>
 
-                    <div className="flex gap-6 pt-2">
-                      <label className="flex items-center cursor-pointer select-none">
+                    <div className="flex flex-wrap gap-6 py-1 bg-zinc-50 dark:bg-zinc-900/20 px-3 py-2.5 rounded-xl border border-zinc-100 dark:border-zinc-900">
+                      <label className="flex items-center cursor-pointer select-none group">
                         <input
                           type="checkbox"
                           name="featured"
-                          onChange={(e) => setFieldValue("featured", e.target.checked)}
+                          id="featured"
+                          onChange={(e) =>
+                            setFieldValue("featured", e.target.checked)
+                          }
                           checked={values.featured}
-                          className="w-4 h-4 accent-red-700 mr-2 rounded"
+                          disabled={isSubmitting}
+                          className="w-4 h-4 accent-red-700"
                         />
-                        <span className="text-sm">Featured on homepage</span>
+                        <span className="ml-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                          Featured Product
+                        </span>
                       </label>
-                      
-                      <label className="flex items-center cursor-pointer select-none">
+
+                      <label className="flex items-center cursor-pointer select-none group">
                         <input
                           type="checkbox"
                           name="active"
-                          onChange={(e) => setFieldValue("active", e.target.checked)}
+                          id="active"
+                          onChange={(e) =>
+                            setFieldValue("active", e.target.checked)
+                          }
                           checked={values.active}
-                          className="w-4 h-4 accent-red-700 mr-2 rounded"
+                          disabled={isSubmitting}
+                          className="w-4 h-4 accent-red-700"
                         />
-                        <span className="text-sm">Active (visible to shoppers)</span>
+                        <span className="ml-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                          Active Visibility
+                        </span>
                       </label>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t dark:border-zinc-800">
+                    <div className="flex justify-end gap-3 pt-2">
                       <button
                         type="button"
-                        className="px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-zinc-900 transition"
+                        disabled={isSubmitting}
                         onClick={() => {
+                          setOpen(false);
                           resetForm();
                           setPhotos([]);
-                          setOpen(false);
                         }}
+                        className="px-5 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition disabled:opacity-50"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="bg-red-700 hover:bg-red-800 text-white px-5 py-2 rounded-lg text-sm font-medium transition"
+                        disabled={isSubmitting}
+                        className="px-6 py-2 text-sm font-medium bg-red-700 hover:bg-red-400 text-white rounded-xl shadow-md transition disabled:opacity-50 flex items-center gap-2"
                       >
+                        {isSubmitting && (
+                          <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                        )}
                         Create Product
                       </button>
                     </div>
@@ -590,9 +732,6 @@ const AdminProducts = () => {
                 </div>
               </div>
             )}
-
-          
-            <AdminProductView key={refreshKey} search={searchTerm} />
           </section>
         </div>
       </main>

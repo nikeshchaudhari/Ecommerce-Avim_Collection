@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
+import AdminGalleryView from "./AdminGalleryView";
 
 interface FormValues {
   image: File | null;
@@ -41,30 +42,7 @@ const AdminGallery = () => {
       caption: "",
     },
     validationSchema: Yup.object({
-      image: Yup.mixed()
-        .required("Please select an image to upload.")
-        .test(
-          "fileSize",
-          "File size exceeds 2MB! Please upload a smaller image.",
-          (value) => {
-            if (!value) return true;
-            return (value as File).size <= 2 * 1024 * 1024; // 2MB Limit
-          },
-        )
-        .test(
-          "fileType",
-          "Invalid format! Only PNG, JPG, JPEG, and WebP are allowed.",
-          (value) => {
-            if (!value) return true;
-            const allowedTypes = [
-              "image/png",
-              "image/jpeg",
-              "image/jpg",
-              "image/webp",
-            ];
-            return allowedTypes.includes((value as File).type);
-          },
-        ),
+      image: Yup.mixed().required("Please select an image to upload."),
       caption: Yup.string().optional(),
     }),
     onSubmit: async (formValues, { setSubmitting }) => {
@@ -98,15 +76,26 @@ const AdminGallery = () => {
   });
 
   const handleFileSelection = (file: File) => {
-    setFieldValue("image", file);
-    setFieldTouched("image", true, true);
-  };
-
-  useEffect(() => {
-    if (touched.image && errors.image) {
-      toast.error(errors.image as string);
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/webp",
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Invalid format! Only PNG, JPG, JPEG, and WebP are allowed.");
+      return;
     }
-  }, [errors.image, touched.image]);
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File size exceeds 2MB! Please upload a smaller image.");
+      return;
+    }
+
+    setFieldValue("image", file);
+    setFieldTouched("image", true, false);
+  };
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -154,43 +143,40 @@ const AdminGallery = () => {
     };
     fetchData();
   }, []);
+
   return (
     <>
       <main>
         <div className="sticky top-0 z-50">
           <Navbar />
         </div>
+
         <div className="bg-[#f9efe7] dark:bg-black min-h-screen lg:flex">
-          <aside className="hidden lg:block  ">
+          <aside className="hidden lg:block">
             <AdminSideBar />
           </aside>
+          <section className="flex-1 px-5 lg:px-10 pt-5">
+            <div className="flex justify-between items-center  gap-4">
+              <div className="mb-5">
+                <span className="uppercase text-[12px] tracking-[4px] text-yellow-500 font-semibold">
+                  Editorial
+                </span>
+                <h2 className="text-[25px] md:text-[30px] font-cormorant">
+                  Lookbook Gallery
+                </h2>
+                <p className="font-inter text-black/60 dark:text-white/60">
+                  {galleryData.length} image(s)
+                </p>
+              </div>
 
-          <section className="w-full px-5 lg:px-10 pt-5 flex md:justify-between">
-            <div className="min-w-full">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <span className="text-[12px] tracking-[4px] text-yellow-500 font-semibold uppercase">
-                    Editorial
-                  </span>
-
-                  <h2 className="text-[25px] md:text-[30px] font-cormorant">
-                    Lookbook Gallery
-                  </h2>
-
-                  <p className="font-inter text-black/60 dark:text-white/60">
-                    {galleryData.length} image(s)
-                  </p>
-                </div>
-
-                <div className="w-full md:w-auto">
-                  <button
-                    onClick={() => setOpen(true)}
-                    type="button"
-                    className="w-full md:w-auto bg-yellow-500 px-6 py-1.5 rounded hover:bg-yellow-400 transition duration-300 font-inter text-black font-medium"
-                  >
-                    + Add Image
-                  </button>
-                </div>
+              <div className="flex items-center flex-wrap gap-2 relative">
+                <button
+                  type="button"
+                  onClick={() => setOpen(!open)}
+                  className="bg-yellow-500 px-6 py-1.5 rounded hover:bg-yellow-400 transition duration-300 font-inter font-medium text-black"
+                >
+                  + New product
+                </button>
               </div>
             </div>
 
@@ -224,15 +210,17 @@ const AdminGallery = () => {
                       onDragLeave={handleDrag}
                       onDrop={handleDrop}
                       onClick={() => fileRef.current?.click()}
-                      className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition text-center min-h-55 ${dragActive
+                      className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition text-center min-h-55 ${
+                        dragActive
                           ? "border-amber-500 bg-amber-50/40"
                           : "border-stone-300 dark:border-zinc-800 hover:border-stone-400 bg-[#f7f2ea]/40 dark:bg-zinc-900/30"
-                        } ${touched.image && errors.image ? "border-red-500 bg-red-50/20" : ""}`}
+                      } ${touched.image && errors.image ? "border-red-500 bg-red-50/20" : ""}`}
                     >
                       <input
                         type="file"
                         ref={fileRef}
                         onChange={handleFileChange}
+                        onClick={(e) => e.stopPropagation()}
                         accept=".png,.jpg,.jpeg,.webp"
                         className="hidden"
                       />
@@ -240,7 +228,7 @@ const AdminGallery = () => {
                         <LuCloudUpload size={25} />
                       </div>
                       <p className="text-base font-inter font-medium text-stone-800 dark:text-stone-200">
-                        {isImageValid
+                        {values.image
                           ? (values.image as File).name
                           : "Drag & drop or click to browse"}
                       </p>
@@ -249,6 +237,10 @@ const AdminGallery = () => {
                       </p>
                       <button
                         type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          fileRef.current?.click();
+                        }}
                         className="mt-5 px-6 py-2 bg-[#f4b324] hover:bg-amber-500 text-stone-950 font-inter font-bold text-xs tracking-wider rounded-md uppercase flex items-center gap-2 shadow-sm transition-colors"
                       >
                         <LuCloudUpload size={14} className="stroke-3" />
@@ -262,8 +254,7 @@ const AdminGallery = () => {
                       </p>
                     )}
 
-                    {/* image preview                      */}
-                    {isImageValid && (
+                    {values.image && (
                       <div className="flex justify-center pt-2">
                         <div className="relative w-32 h-32 border dark:border-zinc-800 rounded-lg overflow-hidden bg-stone-100 shadow-sm">
                           <img
@@ -279,7 +270,7 @@ const AdminGallery = () => {
                             }}
                             className="absolute top-1 right-1 w-5 h-5 bg-black/70 hover:bg-black rounded-full flex items-center justify-center text-white text-xs transition"
                           >
-                            ×
+                            <RxCross2 />
                           </button>
                         </div>
                       </div>
@@ -313,8 +304,9 @@ const AdminGallery = () => {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`px-6 py-2.5 bg-[#781c24] hover:bg-red-900 text-white font-inter font-bold text-sm rounded shadow-md transition-colors ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                        className={`px-6 py-2.5 bg-[#781c24] hover:bg-red-900 text-white font-inter font-bold text-sm rounded shadow-md transition-colors ${
+                          isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                       >
                         {isSubmitting ? "Uploading..." : "Add to gallery"}
                       </button>
@@ -323,6 +315,7 @@ const AdminGallery = () => {
                 </div>
               </div>
             )}
+            <AdminGalleryView />
           </section>
         </div>
       </main>

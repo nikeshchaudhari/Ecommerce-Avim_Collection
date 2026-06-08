@@ -143,7 +143,7 @@ const AdminOrders = () => {
                   <span className="text-[12px] tracking-[4px] text-yellow-500 font-semibold">
                     Operations
                   </span>
-                  <h2 className="text-[25px] md:text-[30px] font-cormorant font-bold">
+                  <h2 className="text-[25px] md:text-[30px] font-cormorant ">
                     Orders
                   </h2>
                   <p className="font-inter text-black/60 dark:text-white/60">

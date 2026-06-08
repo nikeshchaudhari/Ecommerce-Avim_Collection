@@ -26,14 +26,11 @@ const AdminDashbaord = () => {
       const totalRes = await axios.get(
         "http://localhost:3000/order/total-revenue",
       );
-      const todayRes = await axios.get(
-        "http://localhost:3000/order/today-revenue",
-      );
+      
       const totalOrders = await axios.get(
         "http://localhost:3000/order/all-order",
       );
       setTotalRevenue(totalRes.data.totalRevenue);
-      setTodayRevenue(todayRes.data.todayRevenues);
       setOrders(totalOrders.data.Allorders);
       console.log(totalOrders.data);
     } catch (err) {

@@ -136,7 +136,7 @@ const AdminUsers = () => {
           </aside>
 
           <section className="flex-1 px-5 lg:px-10 pt-5">
-            <div className="flex justify-between items-center flex-wrap">
+            <div className="flex justify-between items-center ">
               <div className="mb-5">
                 <span className="text-[12px] tracking-[4px] text-yellow-500 uppercase">
                   Members
