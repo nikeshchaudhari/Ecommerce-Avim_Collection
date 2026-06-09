@@ -19,6 +19,7 @@ const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -36,6 +37,74 @@ const AdminProducts = () => {
 
   const handleClick = () => {
     fileRef.current?.click();
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const processFiles = (files: FileList | null) => {
+    if (!files) return;
+
+    const fileArray = Array.from(files);
+    const validFiles = fileArray.filter(
+      (file) =>
+        file.type === "image/jpeg" ||
+        file.type === "image/jpg" ||
+        file.type === "image/png"
+    );
+
+    if (validFiles.length !== fileArray.length) {
+      toast.error("Only JPEG, JPG, and PNG files are allowed");
+      return;
+    }
+
+    if (values.photos.length + validFiles.length > 5) {
+      toast.error("Maximum 5 photos allowed");
+      return;
+    }
+
+    setLoading(true);
+    setFieldValue("photos", [...values.photos, ...validFiles]);
+
+    const preview = validFiles.map((file) => URL.createObjectURL(file));
+    setPhotos((prev) => [...prev, ...preview]);
+
+    setTimeout(() => {
+      setLoading(false);
+      toast.success(`${validFiles.length} file(s) added successfully`);
+    }, 500);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    const files = e.dataTransfer.files;
+    processFiles(files);
+  };
+
+  const handleLoading = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    processFiles(files);
+    e.target.value = ""; // Reset input to allow re-uploading same files
+  };
+
+  const handleDelete = (i: number) => {
+    // Revoke URL to avoid memory leaks
+    URL.revokeObjectURL(photos[i]);
+    
+    const updatedPhotos = values.photos.filter((_, index) => index !== i);
+    setFieldValue("photos", updatedPhotos);
+    setPhotos((prev) => prev.filter((_, index) => index !== i));
   };
 
   const {
@@ -109,6 +178,9 @@ const AdminProducts = () => {
           },
         );
 
+        // Cleanup object URLs
+        photos.forEach((url) => URL.revokeObjectURL(url));
+        
         resetForm();
         setOpen(false);
         setPhotos([]);
@@ -117,36 +189,10 @@ const AdminProducts = () => {
         console.log(res.data);
       } catch (err) {
         toast.error("Error creating product");
+        console.error(err);
       }
     },
   });
-
-  const handleLoading = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-
-    if (values.photos.length + files.length > 5) {
-      alert("Maximum 5 photos allowed");
-      return;
-    }
-
-    setLoading(true);
-    setFieldValue("photos", [...values.photos, ...files]);
-
-    const preview = files.map((file) => URL.createObjectURL(file));
-    setPhotos((prev) => [...prev, ...preview]);
-    e.target.value = "";
-
-    setTimeout(() => {
-      setLoading(false);
-      console.log("Upload ready");
-    }, 1500);
-  };
-
-  const handleDelete = (i: number) => {
-    const updatedPhotos = values.photos.filter((_, index) => index !== i);
-    setFieldValue("photos", updatedPhotos);
-    setPhotos((prev) => prev.filter((_, index) => index !== i));
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -228,6 +274,8 @@ const AdminProducts = () => {
                     onClick={() => {
                       setOpen(false);
                       resetForm();
+                      // Cleanup object URLs
+                      photos.forEach((url) => URL.revokeObjectURL(url));
                       setPhotos([]);
                     }}
                     className="absolute top-5 right-5 text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 transition disabled:opacity-50"
@@ -238,7 +286,7 @@ const AdminProducts = () => {
                   <div className="flex items-center gap-1.5 text-amber-500 mb-1">
                     <WiStars size={22} className="animate-pulse" />
                     <span className="tracking-[4px] text-[11px] font-inter font-bold uppercase">
-                      Catalog 
+                      Catalog
                     </span>
                   </div>
 
@@ -255,20 +303,33 @@ const AdminProducts = () => {
                         className={`relative w-full h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition ${
                           loading
                             ? "border-zinc-300 bg-zinc-100 dark:bg-zinc-900 cursor-not-allowed"
+                            : isDragOver
+                            ? "border-amber-500 bg-amber-50/50 dark:bg-amber-950/20"
                             : "border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 hover:bg-zinc-100/70 dark:hover:bg-zinc-900/70"
                         }`}
                         onClick={!loading ? handleClick : undefined}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
                       >
-                        <div className="bg-red-50 dark:bg-red-950/20 p-2.5 rounded-full mb-2">
+                        <div
+                          className={`bg-red-50 dark:bg-red-950/20 p-2.5 rounded-full mb-2 transition ${
+                            isDragOver ? "scale-110" : ""
+                          }`}
+                        >
                           <SlCloudUpload
                             size={26}
-                            className="text-red-600 dark:text-red-500"
+                            className={`text-red-600 dark:text-red-500 transition ${
+                              isDragOver ? "text-amber-500" : ""
+                            }`}
                           />
                         </div>
-                        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                          Drag & drop or click to browse
+                        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 text-center">
+                          {isDragOver
+                            ? "Drop your images here"
+                            : "Drag & drop or click to browse"}
                         </p>
-                        <p className="text-xs text-zinc-400 mt-0.5">
+                        <p className="text-xs text-zinc-400 mt-0.5 text-center">
                           JPEG, JPG, PNG only (Max 5)
                         </p>
 
@@ -289,8 +350,20 @@ const AdminProducts = () => {
                         )}
                       </div>
 
+                      {/* Browse files button */}
+                      <div className="flex justify-center">
+                        <button
+                          type="button"
+                          onClick={handleClick}
+                          disabled={loading || values.photos.length >= 5}
+                          className="px-4 py-1.5 text-sm font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Browse Files
+                        </button>
+                      </div>
+
                       {touched.photos && errors.photos && (
-                        <p className="text-xs text-red-500 font-medium pl-1">
+                        <p className="text-xs text-red-500 font-medium pl-1 text-center">
                           {String(errors.photos)} *
                         </p>
                       )}
@@ -305,7 +378,7 @@ const AdminProducts = () => {
                           >
                             <img
                               src={img}
-                              alt="preview"
+                              alt={`preview-${i}`}
                               className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center" />
@@ -711,6 +784,7 @@ const AdminProducts = () => {
                         onClick={() => {
                           setOpen(false);
                           resetForm();
+                          photos.forEach((url) => URL.revokeObjectURL(url));
                           setPhotos([]);
                         }}
                         className="px-5 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition disabled:opacity-50"
@@ -723,7 +797,7 @@ const AdminProducts = () => {
                         className="px-6 py-2 text-sm font-medium bg-red-700 hover:bg-red-400 text-white rounded-xl shadow-md transition disabled:opacity-50 flex items-center gap-2"
                       >
                         {isSubmitting && (
-                          <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         )}
                         Create Product
                       </button>
