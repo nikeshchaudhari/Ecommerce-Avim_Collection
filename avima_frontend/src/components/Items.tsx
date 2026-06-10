@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { LuShoppingBag } from "react-icons/lu";
+import { Riple } from "react-loading-indicators";
 import { Link } from "react-router-dom";
 
 interface Product {
@@ -47,8 +48,8 @@ const Items = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-600"></div>
+      <div className="flex justify-center h-screen items-center">
+        <Riple color="#32cd32" size="medium" text="" textColor="" />
       </div>
     );
   }
