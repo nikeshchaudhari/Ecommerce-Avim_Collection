@@ -24,7 +24,7 @@ const Items = () => {
         const res = await axios.get(
           "http://localhost:3000/product/all-products",
         );
-        setProducts(res.data.products || []);
+        setProducts([...res.data.products].reverse());
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -56,12 +56,10 @@ const Items = () => {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Items Counter Header */}
       <div className="mb-6 font-inter text-gray-600 font-medium text-sm md:text-base">
         <h2>{products.length} pieces available</h2>
       </div>
 
-      {/* Grid: 2 columns on mobile, scaling up beautifully to 5 on large monitors */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
         {products.map((item) => {
           const imageUrl = getFirstPhotoUrl(item.photos);
@@ -108,10 +106,11 @@ const Items = () => {
                   <button className="border border-gray-300 p-2 rounded-full hover:border-red-600 hover:bg-red-600 text-black hover:text-white transition-all duration-300 cursor-pointer">
                     <FaRegHeart size={16} />
                   </button>
-                  <Link to={`/shop/${item.id}`} className="bg-red-600 hover:bg-red-700 text-white font-inter text-center text-sm py-2 px-4 rounded-full grow mx-2 transition-all cursor-pointer">
-                    <button >
-                      Buy Now
-                    </button>
+                  <Link
+                    to={`/shop/${item.id}`}
+                    className="bg-red-600 hover:bg-red-700 text-white font-inter text-center text-sm py-2 px-4 rounded-full grow mx-2 transition-all cursor-pointer"
+                  >
+                    <button>Buy Now</button>
                   </Link>
                   <button className="border border-gray-300 p-2 rounded-full hover:border-black hover:bg-black text-black hover:text-white transition-all duration-300 cursor-pointer">
                     <LuShoppingBag size={16} />
