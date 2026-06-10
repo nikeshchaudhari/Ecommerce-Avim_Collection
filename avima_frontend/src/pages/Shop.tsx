@@ -1,30 +1,35 @@
-
 import UserNavbar from "../components/UserNavbar";
 import Items from "../components/Items";
 
 const Shop = () => {
   return (
     <>
-      <main className="bg-[#faf5ec]">
+    
+      <main className="bg-[#faf5ec] min-h-screen pb-16">
         <UserNavbar />
-        <div className=" flex justify-center mt-10 ">
-          <div className="w-full">
-            {" "}
-            <span className="flex justify-center font-inter uppercase text-[#f7b828] text-[12px]">
+        
+        <div className="flex justify-center mt-10 px-4">
+          <div className="w-full text-center">
+            <span className="inline-block font-inter uppercase text-[#f7b828] text-[12px] tracking-widest font-semibold">
               The Atelier
             </span>
-            <h2 className="flex justify-center tracking-tight text-[35px] md:text-[50px] font-cormorant font-medium">
+            
+            <h2 className="tracking-tight text-[35px] md:text-[50px] font-cormorant font-medium text-[#1c1c1c] mt-2">
               Shop the Collection
             </h2>
-            <div className="w-full flex justify-center ">
-              <span className="w-[80vw] md:w-full flex justify-center font-inter text-[14px] md:text-[18px] text-black/60">
+            
+            <div className="w-full flex justify-center mt-3">
+              {/* Cleaned up width parameters for optimal text-wrapping layout bounds */}
+              <p className="max-w-xl font-inter text-[14px] md:text-[16px] text-black/60 leading-relaxed">
                 Pieces hand-woven by master artisans of Bhaktapur, Patan and the
                 Kathmandu valley.
-              </span>
+              </p>
             </div>
           </div>
         </div>
-        <div>
+
+        {/* Clean wrapping section for your optimized product catalog display */}
+        <div className="mt-8">
           <section>
             <Items />
           </section>
