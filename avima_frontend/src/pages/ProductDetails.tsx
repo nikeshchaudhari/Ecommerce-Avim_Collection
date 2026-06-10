@@ -61,7 +61,7 @@ const ProductDetails = () => {
               <div>
                 <div className="mt-5 flex md:block  justify-center ">
                   <img
-                    src={photos[selectPhoto]?.url}
+                    src={photos[selectPhoto]?.url || "https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725120-stock-illustration-image-available-icon-flat-vector.jpg"}
                     className="w-50 h-75 md:w-125 md:h-150 rounded-lg"
                   />
                 </div>
@@ -83,7 +83,9 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-              <div></div>
+              <div>
+                {product.category}
+              </div>
             </div>
           </div>
         </div>
