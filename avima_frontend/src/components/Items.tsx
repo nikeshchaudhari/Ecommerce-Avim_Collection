@@ -72,7 +72,7 @@ const Items = () => {
               className="group flex flex-col justify-between bg-white border border-gray-100 rounded-xl overflow-hidden shadow-xs hover:shadow-md hover:border-amber-500/40 transition-all duration-300 relative"
             >
               {/* Product Image & Category */}
-              <div className="relative overflow-hidden bg-gray-50 aspect-[3/4] w-full">
+              <div className="relative overflow-hidden bg-gray-50 aspect-3/4 w-full">
                 <Link to={`/shop/${item.id}`} className="block w-full h-full">
                   <img
                     src={imageUrl}
@@ -108,7 +108,7 @@ const Items = () => {
                   <button className="border border-gray-300 p-2 rounded-full hover:border-red-600 hover:bg-red-600 text-black hover:text-white transition-all duration-300 cursor-pointer">
                     <FaRegHeart size={16} />
                   </button>
-                  <Link to={`/shop/${item.id}`} className="bg-red-600 hover:bg-red-700 text-white font-inter text-center text-sm py-2 px-4 rounded-full flex-grow mx-2 transition-all cursor-pointer">
+                  <Link to={`/shop/${item.id}`} className="bg-red-600 hover:bg-red-700 text-white font-inter text-center text-sm py-2 px-4 rounded-full grow mx-2 transition-all cursor-pointer">
                     <button >
                       Buy Now
                     </button>
@@ -125,7 +125,7 @@ const Items = () => {
 
                 <Link
                   to={`/shop/${item.id}`}
-                  className="flex-grow bg-red-600 active:bg-red-700 text-white text-xs font-medium font-inter py-2 rounded-full text-center transition-all flex items-center justify-center"
+                  className="grow bg-red-600 active:bg-red-700 text-white text-xs font-medium font-inter py-2 rounded-full text-center transition-all flex items-center justify-center"
                 >
                   Buy Now
                 </Link>
