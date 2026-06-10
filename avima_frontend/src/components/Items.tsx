@@ -9,7 +9,7 @@ interface Product {
   id: number;
   title: string;
   category: string;
-  photos: string; 
+  photos: string;
   price: number;
 }
 
@@ -20,7 +20,9 @@ const Items = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/product/all-products");
+        const res = await axios.get(
+          "http://localhost:3000/product/all-products",
+        );
         setProducts(res.data.products || []);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -105,35 +107,32 @@ const Items = () => {
                   <button className="border border-gray-300 p-2 rounded-full hover:border-red-600 hover:bg-red-600 text-black hover:text-white transition-all duration-300 cursor-pointer">
                     <FaRegHeart size={16} />
                   </button>
-                  <Link to = {`/shop/${item.id}`}>
-                  <button className="bg-red-600 hover:bg-red-700 text-white font-inter text-center text-sm py-2 px-4 rounded-full flex-grow mx-2 transition-all cursor-pointer">
-                    Buy Now
-                  </button>
+                  <Link to={`/shop/${item.id}`} className="bg-red-600 hover:bg-red-700 text-white font-inter text-center text-sm py-2 px-4 rounded-full flex-grow mx-2 transition-all cursor-pointer">
+                    <button >
+                      Buy Now
+                    </button>
                   </Link>
                   <button className="border border-gray-300 p-2 rounded-full hover:border-black hover:bg-black text-black hover:text-white transition-all duration-300 cursor-pointer">
                     <LuShoppingBag size={16} />
                   </button>
                 </div>
               </div>
-<div className="flex md:hidden border-t border-gray-100 p-2 gap-1.5 bg-gray-50/50">
+              <div className="flex md:hidden border-t border-gray-100 p-2 gap-1.5 bg-gray-50/50">
+                <button className="border border-gray-200 p-2 rounded-full text-gray-600 active:bg-red-50 active:text-red-600 active:border-red-200 transition-all">
+                  <FaRegHeart size={16} />
+                </button>
 
-  <button className="border border-gray-200 p-2 rounded-full text-gray-600 active:bg-red-50 active:text-red-600 active:border-red-200 transition-all">
-    <FaRegHeart size={16} />
-  </button>
+                <Link
+                  to={`/shop/${item.id}`}
+                  className="flex-grow bg-red-600 active:bg-red-700 text-white text-xs font-medium font-inter py-2 rounded-full text-center transition-all flex items-center justify-center"
+                >
+                  Buy Now
+                </Link>
 
-  <Link
-    to={`/shop/${item.id}`}
-    className="flex-grow bg-red-600 active:bg-red-700 text-white text-xs font-medium font-inter py-2 rounded-full text-center transition-all flex items-center justify-center"
-  >
-    Buy Now
-  </Link>
-
-  <button className="border border-gray-200 p-2 rounded-full text-gray-600 active:bg-gray-200 active:text-black transition-all">
-    <LuShoppingBag size={16} />
-  </button>
-
-</div>
-
+                <button className="border border-gray-200 p-2 rounded-full text-gray-600 active:bg-gray-200 active:text-black transition-all">
+                  <LuShoppingBag size={16} />
+                </button>
+              </div>
             </div>
           );
         })}
