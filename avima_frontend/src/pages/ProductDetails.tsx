@@ -97,6 +97,28 @@ const ProductDetails = () => {
                   {product.category}
                 </h2>
                 <h1 className="text-5xl font-cormorant mt-5">{product.name}</h1>
+                <div className="flex gap-3">
+                  <h1 className="text-4xl font-inter mt-5 text-red-700 font-bold">
+                    $
+                    {Number(product.price).toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </h1>
+                  <h1 className="text-2xl font-cormorant mt-8 text-gray-500  line-through">
+                    $
+                    {Number(product.compare_price).toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </h1>
+                </div>
+                <p className="mt-5 font-inter text-gray-600">
+                  {product.description}
+                </p>
+                <div className="mt-5">
+                  <h2 className="uppercase font-inter">Size</h2>
+                </div>
               </div>
             </div>
           </div>
