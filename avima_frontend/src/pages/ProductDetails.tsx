@@ -82,7 +82,7 @@ const ProductDetails = () => {
                       photos[selectPhoto]?.url ||
                       "https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725120-stock-illustration-image-available-icon-flat-vector.jpg"
                     }
-                    className="w-50 h-75 md:w-125 md:h-150 rounded-lg"
+                    className="w-50 h-75 md:w-[25vw] md:h-150 rounded-lg"
                   />
                 </div>
                 <div className="flex gap-5 mt-5">
@@ -108,10 +108,10 @@ const ProductDetails = () => {
                   {" "}
                   {product.category}
                 </h2>
-                <h1 className="text-5xl font-cormorant mt-5">{product.name}</h1>
+                <h1 className="text-[20px] md:text-5xl font-cormorant md:mt-5">{product.name}</h1>
                 <div className="flex gap-3">
                   {/* PRICE  SHOW */}
-                  <h1 className="text-4xl font-inter mt-5 text-red-700 font-bold">
+                  <h1 className="text-[25px] md:text-4xl font-inter mt-3 md:mt-5 text-red-700 font-bold">
                     $
                     {Number(product.price).toLocaleString("en-US", {
                       minimumFractionDigits: 2,
