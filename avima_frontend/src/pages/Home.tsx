@@ -1,5 +1,6 @@
 import photo from "../assets/herosection.jpg";
 import UserNavbar from "../components/UserNavbar";
+import Footer from "./Footer";
 const Home = () => {
   return (
     <>
@@ -22,6 +23,7 @@ const Home = () => {
             </div>
           </section>
         </div>
+        <Footer/>
       </main>
     </>
   );
