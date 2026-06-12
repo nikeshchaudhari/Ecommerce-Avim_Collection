@@ -56,7 +56,7 @@ const ProductDetails = () => {
         <UserNavbar />
 
         <div className="  flex justify-center">
-          <div className="w-[70vw] ">
+          <div className="w-[70vw]  ">
             {/* breadcrum */}
             <div className="mt-10">
               <div className="text-sm text-gray-500 flex gap-2">
@@ -186,18 +186,17 @@ const ProductDetails = () => {
                 </div>
                 <div className="w-full max-w-xl font-sans select-none flex flex-col items-center gap-4 mt-5">
       {/* Top Button Row Container */}
-      <div className="w-full md:w-[30vw] flex gap-3 bg-red-700">
+      <div className="w-full flex justify-center gap-3 ">
         
-        {/* Add to Cart Button (Pure Div) */}
-        <div className="flex-1 bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]">
+        <div className="w-[50vw] bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]">
           <LuShoppingBag size={20} className="stroke-[2.5]" />
-          <div className="text-[20px]">Add to Cart</div>
+          <div className="md:text-[20px]">Add to Cart</div>
         </div>
 
         {/* Wishlisted Button (Pure Div) */}
         <div className="w-50 bg-[#FAF6F0] border border-gray-200/80 text-[#1C1C1C] text-sm font-normal tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer hover:border-gray-300 transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.02)] active:scale-[0.99]">
           <IoIosHeartEmpty size={20}/>
-          <div className="text-[20px]">Wishlisted</div>
+          <div className="md:text-[20px]">Wishlisted</div>
         </div>
 
       </div>
