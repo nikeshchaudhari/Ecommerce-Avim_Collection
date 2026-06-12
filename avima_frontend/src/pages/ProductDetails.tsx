@@ -40,7 +40,7 @@ const ProductDetails = () => {
 
   return (
     <>
-      <main className="bg-[#faf5ec] min-h-screen pb-16">
+      <main className="bg-[#faf5ec] dark:bg-black min-h-screen pb-16">
         <UserNavbar />
 
         <div className="  flex justify-center">
@@ -48,20 +48,28 @@ const ProductDetails = () => {
             {/* breadcrum */}
             <div className="mt-10">
               <div className="text-sm text-gray-500 flex gap-2">
-                <Link to="/shop" className="hover:text-black">
+                <Link
+                  to="/shop"
+                  className="dark:text-white text-black hover:text-gray-600"
+                >
                   Shop
                 </Link>
                 <span>/</span>
-                <span className="text-black">{product.name}</span>
+                <span className="text-black dark:text-white">
+                  {product.name}
+                </span>
               </div>
             </div>
 
             {/* products details */}
-            <div>
-              <div>
+            <div className="flex gap-10">
+              <div className="">
                 <div className="mt-5 flex md:block  justify-center ">
                   <img
-                    src={photos[selectPhoto]?.url || "https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725120-stock-illustration-image-available-icon-flat-vector.jpg"}
+                    src={
+                      photos[selectPhoto]?.url ||
+                      "https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725120-stock-illustration-image-available-icon-flat-vector.jpg"
+                    }
                     className="w-50 h-75 md:w-125 md:h-150 rounded-lg"
                   />
                 </div>
@@ -83,8 +91,12 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-              <div>
-                {product.category}
+              <div className="mt-10">
+                <h2 className="uppercase text-[#f7b828] font-inter ">
+                  {" "}
+                  {product.category}
+                </h2>
+                <h1 className="text-5xl font-cormorant mt-5">{product.name}</h1>
               </div>
             </div>
           </div>
