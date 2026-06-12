@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import { Riple } from "react-loading-indicators";
 import { Link, useParams } from "react-router-dom";
 import UserNavbar from "../components/UserNavbar";
+import { MdAdd } from "react-icons/md";
+import { RiSubtractFill } from "react-icons/ri";
+import { BiMinus, BiPlus } from "react-icons/bi";
+import { LuShoppingBag } from "react-icons/lu";
+import { FaHeart } from "react-icons/fa";
+import { IoIosHeartEmpty } from "react-icons/io";
 
 interface Product {
   name: string;
@@ -17,6 +23,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState<any | null>(null);
   const [selectPhoto, setSelectPhoto] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
   useEffect(() => {
     const fetchProduct = async () => {
       const res = await axios.get("http://localhost:3000/product/all-products");
@@ -24,7 +32,7 @@ const ProductDetails = () => {
       const found = res.data.products.find((p: any) => p.id == id);
 
       setProduct(found);
-      console.log(found);
+      // console.log(found);
     };
 
     fetchProduct();
@@ -38,13 +46,17 @@ const ProductDetails = () => {
   }
   const photos = JSON.parse(product?.photos || "[]");
 
+  const size = product.sizes.replace(/"/g, "").split(",");
+  const color = product.colors.replace(/"/g, "").split(",");
+  console.log(typeof color);
+
   return (
     <>
       <main className="bg-[#faf5ec] dark:bg-black min-h-screen pb-16">
         <UserNavbar />
 
         <div className="  flex justify-center">
-          <div className="w-[80vw] ">
+          <div className="w-[70vw] ">
             {/* breadcrum */}
             <div className="mt-10">
               <div className="text-sm text-gray-500 flex gap-2">
@@ -62,7 +74,7 @@ const ProductDetails = () => {
             </div>
 
             {/* products details */}
-            <div className="flex gap-10">
+            <div className="md:flex gap-10">
               <div className="">
                 <div className="mt-5 flex md:block  justify-center ">
                   <img
@@ -98,6 +110,7 @@ const ProductDetails = () => {
                 </h2>
                 <h1 className="text-5xl font-cormorant mt-5">{product.name}</h1>
                 <div className="flex gap-3">
+                  {/* PRICE  SHOW */}
                   <h1 className="text-4xl font-inter mt-5 text-red-700 font-bold">
                     $
                     {Number(product.price).toLocaleString("en-US", {
@@ -105,20 +118,96 @@ const ProductDetails = () => {
                       maximumFractionDigits: 2,
                     })}
                   </h1>
-                  <h1 className="text-2xl font-cormorant mt-8 text-gray-500  line-through">
-                    $
-                    {Number(product.compare_price).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </h1>
+
+                  {product.compare_price != null && (
+                    <h1 className="text-2xl font-cormorant mt-8 text-gray-500 line-through">
+                      $
+                      {Number(product.compare_price).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </h1>
+                  )}
                 </div>
                 <p className="mt-5 font-inter text-gray-600">
                   {product.description}
                 </p>
                 <div className="mt-5">
                   <h2 className="uppercase font-inter">Size</h2>
+                  <div className="flex gap-3 mt-3">
+                    {size.map((size: string, index: number) => (
+                      <div
+                        key={index}
+                        onClick={() => setSelectedSize(size)}
+                        className={`border border-gray-500/20 px-4 py-2  cursor-pointer transition ${
+                          selectedSize === size
+                            ? "bg-red-800  text-white"
+                            : "hover:border-gray-600 "
+                        }`}
+                      >
+                        {size}
+                      </div>
+                    ))}
+                  </div>
                 </div>
+                <h2 className="uppercase mt-5 font-inter">Colour</h2>
+                <div className="flex gap-3 mt-3">
+                  {color.map((color: any, index: any) => (
+                    <div
+                      key={index}
+                      onClick={() => setSelectedColor(color)}
+                      className={`border border-gray-500/20 px-4 py-1 rounded-full cursor-pointer transition ${
+                        selectedColor === color
+                          ? "border-red-800  text-red-800"
+                          : "hover:border-gray-600 "
+                      }`}
+                    >
+                      {color}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-4 font-sans select-none mt-5">
+                  <div className="flex items-center justify-between border border-gray-300 bg-white/40 h-11 w-36 px-4">
+                    <div className="text-gray-600 hover:text-black font-light text-xl transition-colors cursor-pointer pb-0.5">
+                      <BiMinus/>
+                    </div>
+
+                    <div className="text-gray-900 font-normal text-base">1</div>
+
+                    <div className="text-gray-600 hover:text-black font-light text-lg transition-colors cursor-pointer">
+                      <BiPlus/>
+                    </div>
+                  </div>
+
+                  <div className="text-sm text-gray-500 font-normal tracking-wide">
+                    {product.stock} in stock
+                  </div>
+                </div>
+                <div className="w-full max-w-xl font-sans select-none flex flex-col items-center gap-4 mt-5">
+      {/* Top Button Row Container */}
+      <div className="w-full md:w-[30vw] flex gap-3 bg-red-700">
+        
+        {/* Add to Cart Button (Pure Div) */}
+        <div className="flex-1 bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]">
+          <LuShoppingBag size={20} className="stroke-[2.5]" />
+          <div className="text-[20px]">Add to Cart</div>
+        </div>
+
+        {/* Wishlisted Button (Pure Div) */}
+        <div className="w-50 bg-[#FAF6F0] border border-gray-200/80 text-[#1C1C1C] text-sm font-normal tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer hover:border-gray-300 transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.02)] active:scale-[0.99]">
+          <IoIosHeartEmpty size={20}/>
+          <div className="text-[20px]">Wishlisted</div>
+        </div>
+
+      </div>
+
+      {/* View Cart Text Link (Pure Div) */}
+      <div className="text-[10px] text-[#4A0E17] hover:text-black tracking-[0.2em] font-bold uppercase transition-colors cursor-pointer mt-1 flex items-center gap-1">
+        <div>View Cart</div>
+        <div className="text-xs font-light translate-y-[-0.5px]">→</div>
+      </div>
+    </div>
               </div>
             </div>
           </div>
