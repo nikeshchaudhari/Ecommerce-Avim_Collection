@@ -48,7 +48,19 @@ const ProductDetails = () => {
 
   const size = product.sizes.replace(/"/g, "").split(",");
   const color = product.colors.replace(/"/g, "").split(",");
-  console.log(typeof color);
+  // console.log(typeof color);
+
+  const handleCart = () => {
+    const cartItems = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      photo: photos[0]?.url,
+      size: selectedSize,
+      color: selectedColor,
+      quantity,
+    };
+  };
 
   return (
     <>
@@ -108,7 +120,9 @@ const ProductDetails = () => {
                   {" "}
                   {product.category}
                 </h2>
-                <h1 className="text-[20px] md:text-5xl font-cormorant md:mt-5">{product.name}</h1>
+                <h1 className="text-[20px] md:text-5xl font-cormorant md:mt-5">
+                  {product.name}
+                </h1>
                 <div className="flex gap-3">
                   {/* PRICE  SHOW */}
                   <h1 className="text-[25px] md:text-4xl font-inter mt-3 md:mt-5 text-red-700 font-bold">
@@ -170,13 +184,13 @@ const ProductDetails = () => {
                 <div className="flex items-center gap-4 font-sans select-none mt-5">
                   <div className="flex items-center justify-between border border-gray-300 bg-white/40 h-11 w-36 px-4">
                     <div className="text-gray-600 hover:text-black font-light text-xl transition-colors cursor-pointer pb-0.5">
-                      <BiMinus/>
+                      <BiMinus />
                     </div>
 
-                    <div className="text-gray-900 font-normal text-base">1</div>
+                    <div className="text-gray-900 font-normal text-base">{quantity}</div>
 
                     <div className="text-gray-600 hover:text-black font-light text-lg transition-colors cursor-pointer">
-                      <BiPlus/>
+                      <BiPlus />
                     </div>
                   </div>
 
@@ -185,28 +199,28 @@ const ProductDetails = () => {
                   </div>
                 </div>
                 <div className="w-full max-w-xl font-sans select-none flex flex-col items-center gap-4 mt-5">
-      {/* Top Button Row Container */}
-      <div className="w-full flex justify-center gap-3 ">
-        
-        <div className="w-[50vw] bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]">
-          <LuShoppingBag size={20} className="stroke-[2.5]" />
-          <div className="md:text-[20px]">Add to Cart</div>
-        </div>
+                  {/* Top Button Row Container */}
+                  <div className="w-full flex justify-center gap-3 ">
+                    <div className="w-[50vw] bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]">
+                      <LuShoppingBag size={20} className="stroke-[2.5]" />
+                      <div className="md:text-[20px]">Add to Cart</div>
+                    </div>
 
-        {/* Wishlisted Button (Pure Div) */}
-        <div className="w-50 bg-[#FAF6F0] border border-gray-200/80 text-[#1C1C1C] text-sm font-normal tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer hover:border-gray-300 transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.02)] active:scale-[0.99]">
-          <IoIosHeartEmpty size={20}/>
-          <div className="md:text-[20px]">Wishlisted</div>
-        </div>
+                    {/* Wishlisted Button (Pure Div) */}
+                    <div className="w-50 bg-[#FAF6F0] border border-gray-200/80 text-[#1C1C1C] text-sm font-normal tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer hover:border-gray-300 transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.02)] active:scale-[0.99]  py-2 px-4">
+                      <IoIosHeartEmpty size={20} />
+                      <div className="md:text-[20px]">Wishlisted</div>
+                    </div>
+                  </div>
 
-      </div>
-
-      {/* View Cart Text Link (Pure Div) */}
-      <div className="text-[10px] text-[#4A0E17] hover:text-black tracking-[0.2em] font-bold uppercase transition-colors cursor-pointer mt-1 flex items-center gap-1">
-        <div>View Cart</div>
-        <div className="text-xs font-light translate-y-[-0.5px]">→</div>
-      </div>
-    </div>
+                  {/* View Cart Text Link (Pure Div) */}
+                  <div className="text-[10px] text-[#4A0E17] hover:text-black tracking-[0.2em] font-bold uppercase transition-colors cursor-pointer mt-1 flex items-center gap-1">
+                    <div>View Cart</div>
+                    <div className="text-xs font-light translate-y-[-0.5px]">
+                      →
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ import Footer from "./Footer";
 const Home = () => {
   return (
     <>
-      <main className="bg-[#faf5ec] ">
+      <main className="bg-[#faf5ec] dark:bg-black">
         <div>
           <UserNavbar />
           <section className="relative">

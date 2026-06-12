@@ -31,7 +31,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 3: Brand Info Context Links (takes up 3 cols on desktop) */}
           <div className="md:col-span-2 flex flex-col gap-3">
             <span className="text-[11px] font-semibold text-[#80162B] uppercase tracking-[0.2em] font-inter block mb-1">
               House
