@@ -3,12 +3,11 @@ import { useEffect, useState } from "react";
 import { Riple } from "react-loading-indicators";
 import { Link, useParams } from "react-router-dom";
 import UserNavbar from "../components/UserNavbar";
-import { MdAdd } from "react-icons/md";
-import { RiSubtractFill } from "react-icons/ri";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { LuShoppingBag } from "react-icons/lu";
-import { FaHeart } from "react-icons/fa";
 import { IoIosHeartEmpty } from "react-icons/io";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cartSlice";
 
 interface Product {
   name: string;
@@ -25,6 +24,9 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const fetchProduct = async () => {
       const res = await axios.get("http://localhost:3000/product/all-products");
@@ -51,15 +53,27 @@ const ProductDetails = () => {
   // console.log(typeof color);
 
   const handleCart = () => {
-    const cartItems = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      photo: photos[0]?.url,
-      size: selectedSize,
-      color: selectedColor,
-      quantity,
-    };
+      if (!selectedSize) {
+    alert("Please select size");
+    return;
+  }
+
+  if (!selectedColor) {
+    alert("Please select color");
+    return;
+  }
+    dispatch(
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+        quantity: quantity,
+        size: selectedSize,
+        color: selectedColor,
+        photo: photos[0]?.url,
+      }),
+    );
   };
 
   return (
@@ -184,7 +198,11 @@ const ProductDetails = () => {
                 <div className="flex items-center gap-4 font-sans select-none mt-5">
                   <div className="flex items-center justify-between border border-gray-300 dark:bg-black bg-white/40 h-11 w-36 px-4">
                     <div className=" dark:text-white dark:hover:text-gray-400 text-gray-600 hover:text-black font-light text-xl transition-colors cursor-pointer pb-0.5">
-                      <BiMinus onClick={()=> quantity > 1  && setQuantity(quantity-1)} />
+                      <BiMinus
+                        onClick={() =>
+                          quantity > 1 && setQuantity(quantity - 1)
+                        }
+                      />
                     </div>
 
                     <div className="text-gray-900 dark:text-white font-normal text-base">
@@ -192,11 +210,13 @@ const ProductDetails = () => {
                     </div>
 
                     <div className="dark:text-white dark:hover:text-gray-400 text-gray-600 hover:text-black font-light text-lg transition-colors cursor-pointer">
-                      <BiPlus onClick={() => {
-                        if(quantity < product.stock){
-                           setQuantity(quantity + 1);
-                        }
-                      }} />
+                      <BiPlus
+                        onClick={() => {
+                          if (quantity < product.stock) {
+                            setQuantity(quantity + 1);
+                          }
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -204,10 +224,10 @@ const ProductDetails = () => {
                     {product.stock} in stock
                   </div>
                 </div>
-                <div className="w-full max-w-xl font-sans select-none flex flex-col items-center gap-4 mt-5">
+                <div className="w-full max-w-xl font-sans select-none flex flex-col items-center gap-4 mt-5" >
                   {/* Top Button Row Container */}
-                  <div className="w-full flex justify-center gap-3 ">
-                    <div className="w-[50vw] bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]">
+                  <div className="w-full flex justify-center gap-3 " >
+                    <div className="w-[50vw] bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]" onClick={handleCart}>
                       <LuShoppingBag size={20} className="stroke-[2.5]" />
                       <div className="md:text-[20px]">Add to Cart</div>
                     </div>
