@@ -68,7 +68,7 @@ const ProductDetails = () => {
         <UserNavbar />
 
         <div className="  flex justify-center">
-          <div className="w-[70vw]  ">
+          <div className="px-5 w-full md:w-[80vw] xxl:w-full ">
             {/* breadcrum */}
             <div className="mt-10">
               <div className="text-sm text-gray-500 flex gap-2">
@@ -94,7 +94,7 @@ const ProductDetails = () => {
                       photos[selectPhoto]?.url ||
                       "https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725120-stock-illustration-image-available-icon-flat-vector.jpg"
                     }
-                    className="w-50 h-75 md:w-[25vw] md:h-150 rounded-lg"
+                    className="w-50 h-75 md:w-[80vw] md:h-[90vh]  rounded-lg"
                   />
                 </div>
                 <div className="flex gap-5 mt-5">
