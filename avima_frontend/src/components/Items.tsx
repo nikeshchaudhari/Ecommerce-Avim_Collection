@@ -56,7 +56,7 @@ const Items = () => {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-6 font-inter text-gray-600 font-medium text-sm md:text-base">
+      <div className="mb-6 font-inter text-gray-600  dark:text-white font-medium text-sm md:text-base">
         <h2>{products.length} pieces available</h2>
       </div>
 
@@ -67,10 +67,10 @@ const Items = () => {
           return (
             <div
               key={item.id}
-              className="group flex flex-col justify-between bg-white border border-gray-100 rounded-xl overflow-hidden shadow-xs hover:shadow-md hover:border-amber-500/40 transition-all duration-300 relative"
+              className="group flex flex-col justify-between dark:bg-black bg-white border border-gray-100 rounded-xl overflow-hidden shadow-xs hover:shadow-md hover:border-amber-500/40 transition-all duration-300 relative"
             >
               {/* Product Image & Category */}
-              <div className="relative overflow-hidden bg-gray-50 aspect-3/4 w-full">
+              <div className="relative overflow-hidden dark:bg-black bg-gray-50 aspect-3/4 w-full">
                 <Link to={`/shop/${item.id}`} className="block w-full h-full">
                   <img
                     src={imageUrl}
@@ -87,23 +87,23 @@ const Items = () => {
               <div className="relative p-3 md:p-4 flex flex-col justify-between grow ">
                 {/* Product Name */}
                 <div className="">
-                  <h3 className="font-cormorant text-base md:text-lg font-semibold text-gray-800 line-clamp-1 group-hover:text-amber-700 transition-colors duration-200">
+                  <h3 className="font-cormorant text-base md:text-lg font-semibold text-gray-800 line-clamp-1 group-hover:text-amber-700 dark:text-white transition-colors duration-200">
                     {item.name}
                   </h3>
                 </div>
 
                 {/* Price Display */}
-                <div className="border-t border-gray-50  flex items-center gap-2">
+                <div className=" flex items-center gap-2">
                   <span className="text-[10px] md:text-xs text-gray-400 font-medium">
                     Price
                   </span>
-                  <span className="text-amber-700 font-semibold text-sm md:text-base font-sans">
+                  <span className="text-amber-700 dark:text-red-500 font-semibold text-sm md:text-base font-sans">
                     $ {item.price.toLocaleString()}
                   </span>
                 </div>
 
-                <div className="hidden md:absolute md:inset-0 md:flex md:justify-around md:items-center md:bg-white md:opacity-0 md:group-hover:opacity-100 md:transition-all md:duration-300 md:px-2">
-                  <button className="border border-gray-300 p-2 rounded-full hover:border-red-600 hover:bg-red-600 text-black hover:text-white transition-all duration-300 cursor-pointer">
+                <div className="hidden md:absolute md:inset-0 md:flex md:justify-around md:items-center md:bg-white dark:bg-black  md:opacity-0 md:group-hover:opacity-100 md:transition-all md:duration-300 md:px-2">
+                  <button className="border border-gray-300 p-2 rounded-full hover:border-red-600 hover:bg-red-600 text-black dark:text-white hover:text-white transition-all duration-300 cursor-pointer">
                     <FaRegHeart size={16} />
                   </button>
                   <Link
@@ -112,7 +112,7 @@ const Items = () => {
                   >
                     <button>Buy Now</button>
                   </Link>
-                  <button className="border border-gray-300 p-2 rounded-full hover:border-black hover:bg-black text-black hover:text-white transition-all duration-300 cursor-pointer">
+                  <button className="border border-gray-300 p-2 rounded-full dark:hover:bg-whitehover:border-black dark:hover:bg-white hover:bg-black dark:text-white text-black hover:text-black transition-all duration-300 cursor-pointer">
                     <LuShoppingBag size={16} />
                   </button>
                 </div>
