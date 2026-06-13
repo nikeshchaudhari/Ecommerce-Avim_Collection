@@ -5,9 +5,9 @@ import { IoIosHeartEmpty } from "react-icons/io";
 import { LuUser } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { CiDark, CiLight } from "react-icons/ci";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openCart, toogleCart } from "../features/CartUi";
-import type { AppDispatch } from "../store/store";
+import type { AppDispatch, RootState } from "../store/store";
 import { BsHandbag } from "react-icons/bs";
 const UserNavbar = () => {
   const [dark, setDark] = useState(false);
@@ -20,7 +20,7 @@ const UserNavbar = () => {
   }, [dark]);
 
   const dispatch: AppDispatch = useDispatch();
-
+  const cartCount = useSelector((state: RootState) => state.cart.items.length);
   return (
     <main className="flex justify-center border-b border-black/5 dark:border-gray-600 bg-[#faf5ec] dark:bg-black backdrop-blur ">
       <nav className=" md:px-2 py-5 w-[80vw]">
@@ -102,9 +102,17 @@ const UserNavbar = () => {
             </button>
             <IoSearchOutline className=" hidden md:block text-[25px]" />
             <IoIosHeartEmpty size={25} />
-           <Link to="/shop/cart">
-           <BsHandbag size={25}/>
-           </Link>
+            <div className="relative cursor-pointer">
+              <Link to="/shop/cart">
+                <BsHandbag size={25} />
+              </Link>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-yellow-700 text-white text-xs rounded-full px-2 py-1">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+
             <NavLink
               to="/login"
               className={({ isActive }) => (isActive ? "text-red-800" : "")}
