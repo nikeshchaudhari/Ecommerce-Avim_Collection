@@ -32,7 +32,7 @@ const ProductDetails = () => {
       const found = res.data.products.find((p: any) => p.id == id);
 
       setProduct(found);
-      // console.log(found);
+      // console.log(found);x`
     };
 
     fetchProduct();
@@ -182,15 +182,21 @@ const ProductDetails = () => {
                 </div>
 
                 <div className="flex items-center gap-4 font-sans select-none mt-5">
-                  <div className="flex items-center justify-between border border-gray-300 bg-white/40 h-11 w-36 px-4">
-                    <div className="text-gray-600 hover:text-black font-light text-xl transition-colors cursor-pointer pb-0.5">
-                      <BiMinus />
+                  <div className="flex items-center justify-between border border-gray-300 dark:bg-black bg-white/40 h-11 w-36 px-4">
+                    <div className=" dark:text-white dark:hover:text-gray-400 text-gray-600 hover:text-black font-light text-xl transition-colors cursor-pointer pb-0.5">
+                      <BiMinus onClick={()=> quantity > 1  && setQuantity(quantity-1)} />
                     </div>
 
-                    <div className="text-gray-900 font-normal text-base">{quantity}</div>
+                    <div className="text-gray-900 dark:text-white font-normal text-base">
+                      {quantity}
+                    </div>
 
-                    <div className="text-gray-600 hover:text-black font-light text-lg transition-colors cursor-pointer">
-                      <BiPlus />
+                    <div className="dark:text-white dark:hover:text-gray-400 text-gray-600 hover:text-black font-light text-lg transition-colors cursor-pointer">
+                      <BiPlus onClick={() => {
+                        if(quantity < product.stock){
+                           setQuantity(quantity + 1);
+                        }
+                      }} />
                     </div>
                   </div>
 
