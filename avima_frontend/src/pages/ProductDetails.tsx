@@ -6,8 +6,11 @@ import UserNavbar from "../components/UserNavbar";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { LuShoppingBag } from "react-icons/lu";
 import { IoIosHeartEmpty } from "react-icons/io";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../features/cartSlice";
+import Cart from "./Cart";
+import type { RootState } from "../store/store";
+import { openCart } from "../features/CartUi";
 
 interface Product {
   name: string;
@@ -26,6 +29,7 @@ const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState("");
 
   const dispatch = useDispatch();
+  const isOpen =useSelector((state:RootState)=>state.cartOpen.isOpen)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -74,6 +78,7 @@ const ProductDetails = () => {
         photo: photos[0]?.url,
       }),
     );
+      dispatch(openCart()); 
   };
 
   return (
@@ -241,7 +246,7 @@ const ProductDetails = () => {
 
                   {/* View Cart Text Link (Pure Div) */}
                   <div className="text-[10px] text-[#4A0E17] hover:text-black tracking-[0.2em] font-bold uppercase transition-colors cursor-pointer mt-1 flex items-center gap-1">
-                    <div>View Cart</div>
+                    <div onClick={()=>dispatch(openCart())}>View Cart</div>
                     <div className="text-xs font-light translate-y-[-0.5px]">
                       →
                     </div>
