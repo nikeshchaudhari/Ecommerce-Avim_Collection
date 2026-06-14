@@ -7,6 +7,8 @@ import { LoginValid } from "../Schemas/LoginValid";
 import axios from "axios";
 
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setCart } from "../features/cartSlice";
 
 const Login = () => {
   const [passwordShow, setPasswordShow] = useState(false);
@@ -33,16 +35,22 @@ const Login = () => {
           "http://localhost:3000/users/login",
           values,
         );
-        console.log("userdata",res.data);
+        console.log("userdata", res.data);
 
         const data = res.data;
 
         if (data.token) {
           // const token = data.token;
 
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("role", data.role);
-          localStorage.setItem("fullName", data.fullName);
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              id: data.uId,
+              fullName: data.fullName,
+              role: data.role,
+              token: data.token,
+            }),
+          );
         }
 
         toast.success("Login Sucessfully..");
@@ -61,6 +69,13 @@ const Login = () => {
       }
     },
   });
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const cart = JSON.parse(localStorage.getItem(`cart_${user.id}`) || "[]");
+  const dispatch = useDispatch();
+
+  dispatch(setCart(cart));
   return (
     <>
       <main className="bg-[#faf5ec] w-full min-h-screen">

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Riple } from "react-loading-indicators";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import UserNavbar from "../components/UserNavbar";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { LuShoppingBag } from "react-icons/lu";
@@ -11,6 +11,7 @@ import { addToCart } from "../features/cartSlice";
 import Cart from "./Cart";
 import type { RootState } from "../store/store";
 import { openCart } from "../features/CartUi";
+import { toast } from "react-toastify";
 
 interface Product {
   name: string;
@@ -27,9 +28,9 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
-
+const navigate = useNavigate()
   const dispatch = useDispatch();
-  const isOpen =useSelector((state:RootState)=>state.cartOpen.isOpen)
+  const isOpen = useSelector((state: RootState) => state.cartOpen.isOpen);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -57,15 +58,24 @@ const ProductDetails = () => {
   // console.log(typeof color);
 
   const handleCart = () => {
-      if (!selectedSize) {
-    alert("Please select size");
-    return;
-  }
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const token = user.token;
 
-  if (!selectedColor) {
-    alert("Please select color");
-    return;
-  }
+    if (!token) {
+       toast.error("Please login first");
+      navigate("/login");
+      return;
+    }
+    if (!selectedSize) {
+      toast.info("Please select size");
+      return;
+    }
+
+    if (!selectedColor) {
+       toast.info("Please select color");
+      return;
+    }
+
     dispatch(
       addToCart({
         id: product.id,
@@ -78,7 +88,7 @@ const ProductDetails = () => {
         photo: photos[0]?.url,
       }),
     );
-      dispatch(openCart()); 
+    dispatch(openCart());
   };
 
   return (
@@ -229,10 +239,13 @@ const ProductDetails = () => {
                     {product.stock} in stock
                   </div>
                 </div>
-                <div className="w-full max-w-xl font-sans select-none flex flex-col items-center gap-4 mt-5" >
+                <div className="w-full max-w-xl font-sans select-none flex flex-col items-center gap-4 mt-5">
                   {/* Top Button Row Container */}
-                  <div className="w-full flex justify-center gap-3 " >
-                    <div className="w-[50vw] bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]" onClick={handleCart}>
+                  <div className="w-full flex justify-center gap-3 ">
+                    <div
+                      className="w-[50vw] bg-[#F5B333] hover:bg-[#E2A222] text-[#4A0E17] text-sm font-semibold tracking-wide h-12 flex items-center justify-center gap-2 rounded-xs cursor-pointer transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.99]"
+                      onClick={handleCart}
+                    >
                       <LuShoppingBag size={20} className="stroke-[2.5]" />
                       <div className="md:text-[20px]">Add to Cart</div>
                     </div>
@@ -246,7 +259,7 @@ const ProductDetails = () => {
 
                   {/* View Cart Text Link (Pure Div) */}
                   <div className="text-[10px] text-[#4A0E17] hover:text-black tracking-[0.2em] font-bold uppercase transition-colors cursor-pointer mt-1 flex items-center gap-1">
-                    <div onClick={()=>dispatch(openCart())}>View Cart</div>
+                    <div onClick={() => dispatch(openCart())}>View Cart</div>
                     <div className="text-xs font-light translate-y-[-0.5px]">
                       →
                     </div>
