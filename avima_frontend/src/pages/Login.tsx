@@ -47,6 +47,8 @@ const Login = () => {
             JSON.stringify({
               id: data.uId,
               fullName: data.fullName,
+              phone:data.phone,
+              address:data.address,
               role: data.role,
               token: data.token,
             }),

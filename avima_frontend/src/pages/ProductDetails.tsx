@@ -258,12 +258,14 @@ const navigate = useNavigate()
                   </div>
 
                   {/* View Cart Text Link (Pure Div) */}
-                  <div className="text-[10px] text-[#4A0E17] hover:text-black tracking-[0.2em] font-bold uppercase transition-colors cursor-pointer mt-1 flex items-center gap-1">
+                 <Link to="/shop/cart">
+                  <div className="text-[10px] text-[#4A0E17] dark:text-red-700 dark:hover:text-red-600 hover:text-black tracking-[0.2em] font-bold uppercase transition-colors cursor-pointer mt-1 flex items-center gap-1">
                     <div onClick={() => dispatch(openCart())}>View Cart</div>
                     <div className="text-xs font-light translate-y-[-0.5px]">
                       →
                     </div>
                   </div>
+                 </Link>
                 </div>
               </div>
             </div>

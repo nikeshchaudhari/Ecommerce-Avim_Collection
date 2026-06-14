@@ -57,11 +57,11 @@ const Cart = () => {
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start mt-2">
                     
-                    <div className="lg:col-span-7 divide-y divide-gray-200">
+                    <div className="lg:col-span-7 divide-y dark:divide-gray-900 divide-gray-200">
                       {cartItems.map((item: any, index: number) => (
                         <div
                           key={item.id || index}
-                          className="py-6 pt-0 flex  justify-between items-start gap-4"
+                          className="py-6  flex  justify-between items-start gap-4"
                         >
                           <div className="flex flex-col gap-1">
                             <div className="font-serif text-[20px] dark:text-white text-gray-900 font-normal tracking-wide">
