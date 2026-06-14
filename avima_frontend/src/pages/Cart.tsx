@@ -31,7 +31,7 @@ const Cart = () => {
         </div>
 
         {isOpen && (
-          <div className="px-4 sm:px-6 lg:px-12 py-16">
+          <div className="px-4 sm:px-6 lg:px-12 py-10">
             <div className="max-w-6xl mx-auto">
               
               {cartItems.length === 0 ? (
@@ -51,20 +51,20 @@ const Cart = () => {
               ) : (
                 
                 <>
-                  <div className="font-serif text-[38px] text-[#1C1C1C] tracking-wide mb-12">
+                  <div className=" dark:text-white font-cormorant  text-[38px] text-[#1C1C1C] tracking-wide ">
                     Your Cart
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start mt-2">
                     
                     <div className="lg:col-span-7 divide-y divide-gray-200">
                       {cartItems.map((item: any, index: number) => (
                         <div
                           key={item.id || index}
-                          className="py-6 first:pt-0 flex flex-col sm:flex-row justify-between items-start gap-4"
+                          className="py-6 pt-0 flex  justify-between items-start gap-4"
                         >
                           <div className="flex flex-col gap-1">
-                            <div className="font-serif text-[20px] text-gray-900 font-normal tracking-wide">
+                            <div className="font-serif text-[20px] dark:text-white text-gray-900 font-normal tracking-wide">
                               {item.name || "Product Item"}
                             </div>
 
@@ -83,9 +83,9 @@ const Cart = () => {
                             )}
 
                             <div className="flex items-center gap-4 mt-4">
-                              <div className="flex items-center justify-between border border-gray-300 bg-[#FAF8F5] h-8 w-24 px-2 text-gray-500">
+                              <div className="flex items-center justify-between border   dark:bg-black border-gray-300 bg-[#FAF8F5] h-8 w-24 px-2 text-gray-500">
                                 <div
-                                  className="font-light text-base cursor-pointer select-none flex items-center justify-center"
+                                  className="font-light text-base cursor-pointer select-none flex items-center justify-center  "
                                   onClick={() =>
                                     dispatch(
                                       decreaseQuantiy({
@@ -98,7 +98,7 @@ const Cart = () => {
                                 >
                                   <BiMinus size={14} />
                                 </div>
-                                <div className="text-gray-900 font-normal text-xs select-none">
+                                <div className=" dark:text-white text-gray-900 font-normal text-xs select-none">
                                   {item.quantity}
                                 </div>
                                 <div
@@ -137,8 +137,8 @@ const Cart = () => {
                             </div>
                           </div>
 
-                          <div className="font-sans font-medium text-[16px] text-gray-900 pt-1 whitespace-nowrap self-end sm:self-start">
-                            NPR {(
+                          <div className="font-inter dark:text-gray-500 font-medium text-[16px] text-gray-900 whitespace-nowrap self-start sm:self-auto">
+                            $ {(
                               (item.price || 0) * (item.quantity || 1)
                             ).toLocaleString()}
                           </div>
@@ -146,29 +146,29 @@ const Cart = () => {
                       ))}
                     </div>
 
-                    <div className="lg:col-span-5 bg-white border border-gray-200/60 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.01)]">
-                      <div className="font-serif text-[22px] text-gray-900 tracking-wide mb-8">
+                    <div className="lg:col-span-4 dark:bg-black bg-white/20 border border-gray-400/60 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.01)]">
+                      <div className="font-serif text-[22px]  dark:text-white text-gray-900 tracking-wide mb-8">
                         Order Summary
                       </div>
 
-                      <div className="space-y-5 pb-6 border-b border-gray-200">
+                      <div className="space-y-5 pb-6 border-b  border-gray-200">
                         <div className="flex justify-between items-center text-[14px]">
-                          <div className="text-gray-500">Items</div>
-                          <div className="font-medium text-gray-900">
-                            NPR {itemsSubtotal.toLocaleString()}
+                          <div className="  dark:text-white text-gray-500">Items</div>
+                          <div className="font-medium  dark:text-white text-gray-900">
+                            $ {itemsSubtotal.toLocaleString()}
                           </div>
                         </div>
 
                         <div className="flex justify-between items-center text-[14px]">
-                          <div className="text-gray-500">VAT (13%)</div>
-                          <div className="font-medium text-gray-900">
-                            NPR {vatAmount.toLocaleString()}
+                          <div className=" dark:text-white text-gray-500">VAT (13%)</div>
+                          <div className="font-medium  dark:text-white text-gray-900">
+                            $ {vatAmount.toLocaleString()}
                           </div>
                         </div>
 
                         <div className="flex justify-between items-center text-[14px]">
-                          <div className="text-gray-500">Shipping</div>
-                          <div className="text-[13px] text-gray-400 italic">
+                          <div className=" dark:text-white text-gray-500">Shipping</div>
+                          <div className="text-[13px]  dark:text-white text-gray-400 italic">
                             Confirmed via WhatsApp
                           </div>
                         </div>
@@ -191,11 +191,11 @@ const Cart = () => {
                       </div> */}
 
                       <div className="py-6 flex justify-between items-baseline">
-                        <div className="font-serif text-[16px] text-gray-800">
+                        <div className="font-serif text-[16px]  dark:text-white text-gray-800">
                           Total
                         </div>
-                        <div className="font-sans font-medium text-[22px] text-[#80162B]">
-                          NPR {orderTotal.toLocaleString()}
+                        <div className="font-sans font-medium text-[22px]   text-[#80162B]">
+                          $ {orderTotal.toLocaleString()}
                         </div>
                       </div>
 
