@@ -55,7 +55,7 @@ const Checkout = () => {
           customerPhone: formValues.customerPhone,
           shippingAddress: formValues.shippingAddress,
           status: "pending",
-          items: items,
+          items: items || [],
           total: orderTotal,
           notes: formValues.orderNotes || "",
           whatsapp_message: "",
