@@ -15,11 +15,11 @@ const Cart = () => {
   console.log(cartItems);
 
   const itemsSubtotal = cartItems.reduce(
-    (accumulator: number, item: any) =>
-      accumulator + item.price * item.quantity,
+    (t: number, item: any) =>
+      t+ item.price * item.quantity,
     0,
   );
-  const vatAmount = itemsSubtotal * 0.13; // 13% VAT
+  const vatAmount = itemsSubtotal * 0.13; //vat
   const orderTotal = itemsSubtotal + vatAmount;
 
 
