@@ -1,19 +1,20 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import type { RootState } from "../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../store/store";
 import { LuTag, LuMessageCircle } from "react-icons/lu";
 import UserNavbar from "../components/UserNavbar";
 import { useFormik } from "formik";
 import { CheckOut } from "../Schemas/CheckOut";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { clearCart } from "../features/cartSlice";
 
 const Checkout = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const isOpen = useSelector((state: RootState) => state.cartOpen.isOpen);
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const cart = JSON.parse(localStorage.getItem(`cart_${user.id}`) || "[]");
-
+  const dispatch: AppDispatch = useDispatch();
   const itemsSubtotal = cartItems.reduce(
     (sum: number, item: any) => sum + (item.price || 0) * (item.quantity || 1),
     0,
@@ -29,6 +30,7 @@ const Checkout = () => {
     handleBlur,
     touched,
     isSubmitting,
+    resetForm,
   } = useFormik({
     initialValues: {
       customerName: user.fullName || "",
@@ -41,12 +43,11 @@ const Checkout = () => {
       try {
         const items = cartItems.map((item: any) => ({
           productId: item.id,
-          name:item.name,
+          name: item.name,
           quantity: item.quantity,
           size: item.size,
           color: item.color,
-          price:item.price
-          
+          price: item.price,
         }));
         console.log(items);
         const order = {
@@ -65,9 +66,23 @@ const Checkout = () => {
           "http://localhost:3000/order/add-order",
           order,
         );
+
+        const whatAppsMessage = `
+        ✦ AVIMA — Order / Bill ✦
+        CustomerName: ${values.customerName}
+        PhoneNumber: ${values.customerPhone}
+        ShippingAddress: ${values.shippingAddress}
+        Total: $ ${orderTotal}
+        Order ID: ${res.data.orderId}
+        `;
+
+        window.open()
+
+        dispatch(clearCart());
         console.log(res.data);
         toast.success("Order Placed Successfully!");
-        
+        localStorage.removeItem(`cart_${user.id}`);
+        resetForm();
       } catch (error) {
         console.error(error);
         toast.error("Failed to register order request. Please try again.");
